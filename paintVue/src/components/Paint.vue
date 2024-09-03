@@ -1,46 +1,5 @@
 <template>
-  <div class="container">
-<v-dialog width="400" class="saving" v-model="savdialog" transition="dialog-top-transition">
-<v-card variant="outlined">
-<v-card-title><h1>save</h1></v-card-title>
-<v-btn :style="{ backgroundColor: savjason === true ? '#b300b3' : 'initial', color: savjason === true ? '#FFFFFF' : 'initial' }" @click="savejason()">json</v-btn>
-<div style="height:5px;"></div>
-<v-btn :style="{ backgroundColor: savxml === true ? '#b300b3' : 'initial', color: savxml === true ? '#FFFFFF' : 'initial' }" @click="savexml()">xml</v-btn>
-<v-card-actions >
-  <v-btn  variant="outlined" @click="submity() ">OK</v-btn>
-</v-card-actions>
-</v-card>
-</v-dialog>
-<v-dialog width="400" class="saving" v-model="pathdialog" transition="dialog-bottom-transition">
-<v-card variant="outlined">
-<v-card-title>path of saving</v-card-title>
-<input type="text" placeholder="c:\\path" id="path" autofocus>
-<v-card-actions >
-  <v-btn  variant="outlined" @click="send()">save</v-btn>
-</v-card-actions>
-</v-card>
-</v-dialog>
-<v-dialog width="400" class="saving" v-model="loaddialog" transition="dialog-top-transition">
-<v-card variant="outlined">
-<v-card-title><h1>Open</h1></v-card-title>
-<v-btn :style="{ backgroundColor: lodjason === true ? '#b300b3' : 'initial', color: lodjason === true ? '#FFFFFF' : 'initial' }" @click="loadjason()">json</v-btn>
-<div style="height:5px;"></div>
-<v-btn :style="{ backgroundColor: lodxml === true ? '#b300b3' : 'initial', color: lodxml === true ? '#FFFFFF' : 'initial' }" @click="loadxml()">xml</v-btn>
-<v-card-actions >
-  <v-btn  variant="outlined" @click="ok() ">OK</v-btn>
-</v-card-actions>
-</v-card>
-</v-dialog>
-<v-dialog width="400" class="saving" v-model="pathloaddialog" transition="dialog-bottom-transition">
-<v-card variant="outlined">
-<v-card-title>path of file</v-card-title>
-<input type="text" placeholder="c:\\path" id="pathload" autofocus>
-<v-card-actions >
-  <v-btn  variant="outlined" @click="open()">open</v-btn>
-</v-card-actions>
-</v-card>
-</v-dialog>
-
+<div class="container">
 <div class="bord">
 <v-stage :config="configKonva" ref="stage" @dblclick="draw" @click="handleClick"  @mousedown="handleStageMouseDown">
 <v-layer>
@@ -49,7 +8,7 @@
 v-for="(square, index) in squares"
 :key="index"
 :config="{
- x: square.x,
+x: square.x,
 y: square.y,
 width: square.width,
 height: square.height,
@@ -61,7 +20,6 @@ id:square.id,
 rotation:square.rotation,
 scaleX:square.scaleX,
 scaleY:square.scaleY
-
 }"
 @transformend="handleTransformEnd"
 @click="shapeClicked('square', index)"
@@ -91,8 +49,6 @@ scaleY:rect.scaleY
 @transformend="handleTransformEnd"
 @click="shapeClicked('rect', index) "
 @dragend="newpo('rect', index, $event)"   
-
-
 ></v-rect>
 
 <!-- drawing circles -->
@@ -228,7 +184,6 @@ strokeWidth: 4,
 draggable:false,
 }"
 >
-
 </v-line>
 
 <v-transformer ref="transformer" />
@@ -304,16 +259,12 @@ export default  {
       value: null,
       selectedColor: '',
       selectedColor2: '',
-      selectedColor3: '',
-      selectedColor4: '',
-      selectedColor5: '',
       configKonva: {
           width: window.innerWidth,
           height: window.innerHeight,
       },
-      pureColor: '#00000000',
+      pureColor: '#000000',
       pureColor2: '#000000', // Selected edge color
-      isdraw: false,
       rectangles:[],
       squares:[],
       lines:[],
@@ -321,42 +272,30 @@ export default  {
       ellipses:[],
       triangles:[],
       stars:[],
-       polygons:[],
-      rectangle:false,
-      circ:false,
-      ellips:false,
-      lin:false,
-      sqrt:false,
-      tria:false,
-      bru:false,
-      str:false,
-      poly:false,
-      delete:false,
-      cofill:false,
-      coledge:false,
+      isdraw: false,
+      WillDrawRectangle:false,
+      WillDrawCircle:false,
+      WillDrawEllipse:false,
+      WillDrawLine:false,
+      WillDrawSquare:false,
+      WillDrawTriangle:false,
+      WillUseBrush:false,
+      WillDrawStar:false,
+      WillDelete:false,
+      WillChangeColorfill:false,
+      WillChangeColorEdge:false,
+      WillCopy:false,
       currentShape:null,
       shapes:[],
       selectedshapeid: '',  //transform
-        sav:false,
-        path:"" ,
         shapeType: '',
-      ord:null,
-      modifysh:null,
-      cop:false,
-      co:null,
-        savdialog:false,
-        savjason:false,
-        savxml:false,
-        pathdialog:false,
-        loaddialog:false,
-        pathloaddialog:false,
-        lodjason:false,
-        lodxml:false,
-        poldialog:false,
+        ord:null,
+        modifysh:null, 
+        co:null,
         length:200,
         un:0,
         re:0,
-        shapeid:-1,
+        shapeid:0,
          brus:[]
     };
   },
@@ -366,392 +305,86 @@ export default  {
       const pureColor = ref<ColorInputWithoutInstance>("red");
       return{pureColor}
     },
-   handleClick() {
-       this.cop=false;
-      this.cofill=false;
-      this.coledge=false; 
+    DeactivitateOptions()
+    {
+      this.WillDrawRectangle=false;
+      this.WillDrawCircle=false;
+      this.WillDrawEllipse=false;
+      this.WillDrawLine=false;
+      this.WillDrawSquare=false;
+      this.WillDrawTriangle=false;
+      this.WillUseBrush=false;
+      this.WillDrawStar=false;
+      this.WillDelete=false;
+      this.WillChangeColorfill=false;
+      this.WillChangeColorEdge=false;
+      this.WillCopy=false;
     },
-newpo(type, index,e) {
-  this.un++;
-   var v=0;
-
-  if (type === 'circle') {
-    this.shapeType = "Circle"
-       for(let i=0;i<this.shapes.length;i++)
-        {
-          if(this.shapes[i]!==null)
-          {
-                  if(this.shapes[i].id===this.circles[index].id)
-                  {
-                    v=i;
-                    break;
-                  }
-          }
-        
-        }
-          console.log(v);
-    this.circles[index].x=e.target.x();
-    this.circles[index].y=e.target.y();
-    this.shapes[v].x=this.circles[index].x;
-    this.shapes[v].y=this.circles[index].y;
-    this.modifysh=this.shapes[v];
-    this.ord=v;
-    this.modify()
-    console.log(this.shapes[v]);
-    console.log(this.circles[index].x);
-    console.log(this.circles[index].y);
-    }
-    if (type === 'rect') {
-      this.shapeType = "Rectangle"
-     for(let i=0;i<this.shapes.length;i++)
-        {
-          if(this.shapes[i]!==null)
-          {
-                  if(this.shapes[i].id===this.rectangles[index].id)
-                  {
-                    v=i;
-                    break;
-                  }
-          }
-        
-        }
-         console.log(v);
-    this.rectangles[index].x=e.target.x();
-    this.rectangles[index].y=e.target.y();
-    this.shapes[v].x=this.rectangles[index].x;
-    this.shapes[v].y=this.rectangles[index].y;
-      this.modifysh=this.shapes[v];
-    this.ord=v;
-    this.modify()
-    console.log(this.rectangles[index].x);
-    console.log(this.rectangles[index].y);
-    }
-    if (type === 'ellipse') {
-      this.shapeType = "Ellipse"
-    for(let i=0;i<this.shapes.length;i++)
-        {
-          if(this.shapes[i]!==null)
-          {
-                  if(this.shapes[i].id===this.ellipses[index].id)
-                  {
-                    v=i;
-                    break;
-                  }
-          }
-        
-        }
-         console.log(v);
-    this.ellipses[index].x=e.target.x();
-    this.ellipses[index].y=e.target.y();
-    this.shapes[v].x=this.ellipses[index].x;
-    this.shapes[v].y=this.ellipses[index].y;
-      this.modifysh=this.shapes[v];
-    this.ord=v;
-    this.modify()
-    console.log(this.ellipses[index].x);
-    console.log(this.ellipses[index].y);
-    }
-    if (type === 'star') {
-      this.shapeType = "Star"
-      for(let i=0;i<this.shapes.length;i++)
-        {
-          if(this.shapes[i]!==null)
-          {
-                  if(this.shapes[i].id===this.stars[index].id)
-                  {
-                    v=i;
-                    break;
-                  }
-          }
-        
-        }
-         console.log(v);
-        
-    this.stars[index].x=e.target.x();
-    this.stars[index].y=e.target.y();
-    this.shapes[v].x=this.stars[index].x;
-    this.shapes[v].y=this.stars[index].y;
-    this.modifysh=this.shapes[v];
-    this.ord=v;
-    this.modify()
-    console.log(this.stars[index].x);
-    console.log(this.stars[index].y);
-    
-  }
-    if (type === 'line') {
-      this.shapeType = "Line"
-      for(let i=0;i<this.shapes.length;i++)
-        {
-          if(this.shapes[i]!==null)
-          {
-                  if(this.shapes[i].id===this.lines[index].id)
-                  {
-                    v=i;
-                    break;
-                  }
-          }
-        
-        }
-         console.log(v);
-    this.lines[index].x=e.target.x();
-    this.lines[index].y=e.target.y();
-    this.shapes[v].x=this.lines[index].x;
-    this.shapes[v].y=this.lines[index].y;
-    this.modifysh=this.shapes[v];
-    this.ord=v;
-    this.modify()
-    console.log(this.lines[index].x);
-    console.log(this.lines[index].y);
-    }
-    if (type === 'square') {
-      this.shapeType = "Square"
-     for(let i=0;i<this.shapes.length;i++)
-        {
-          if(this.shapes[i]!==null)
-          {
-                  if(this.shapes[i].id===this.squares[index].id)
-                  {
-                    v=i;
-                    break;
-                  }
-          }
-        
-        }
-         console.log(v);
-    this.squares[index].x=e.target.x();
-    this.squares[index].y=e.target.y();
-    this.shapes[v].x=this.squares[index].x;
-    this.shapes[v].y=this.squares[index].y;
-      this.modifysh=this.shapes[v];
-    this.ord=v;
-    this.modify()
-    console.log(this.squares[index].x);
-    console.log(this.squares[index].y);
-    }
-    if (type === 'triangle') {
-      this.shapeType = "Triangle"
-    
-        for(let i=0;i<this.shapes.length;i++)
-        {
-          if(this.shapes[i]!==null)
-          {
-                  if(this.shapes[i].id===this.triangles[index].id)
-                  {
-                    v=i;
-                    break;
-                  }
-          }
-        
-        }
-         console.log(v);
-    this.triangles[index].x=e.target.x();
-    this.triangles[index].y=e.target.y();
-    this.shapes[v].x=this.triangles[index].x;
-    this.shapes[v].y=this.triangles[index].y;
-    this.modifysh=this.shapes[v];
-    this.ord=v;
-    this.modify()
-    console.log(this.triangles[index].x);
-    console.log(this.triangles[index].y);
-    }
-
-    if (type === 'Polygon') {
-      this.shapeType = "Polygon"
-      for(let i=0;i<this.shapes.length;i++)
-        {
-          if(this.shapes[i]!==null)
-          {
-                  if(this.shapes[i].id===this.polygons[index].id)
-                  {
-                    v=i;
-                    break;
-                  }
-          }
-        
-        }
-         console.log(v);
-    this.polygons[index].x=e.target.x();
-    this.polygons[index].y=e.target.y();
-    this.shapes[v].x=this.polygons[index].x;
-    this.shapes[v].y=this.polygons[index].y;
-    this.modifysh=this.shapes[v];
-    this.ord=v;
-    this.modify()
-    console.log(this.polygons[index].x);
-    console.log(this.polygons[index].y);
-    }
-    
+   handleClick() {
+      this.WillCopy=false;
+      this.WillChangeColorfill=false;
+      this.WillChangeColorEdge=false; 
+    },
+newpo(type, index,e) {    //TODO
     
   },
     rect(){
-         this.rectangle=true;
-       this.circ=false;
-      this.ellips=false;
-      this.lin=false;
-      this.sqrt=false;
-      this.tria=false;
-      this.cofill=false;
-      this.delete=false;
-      this.coledge=false;
-      this.bru=false;
-      this.str=false;
-      this.poly=false;
+      this.DeactivitateOptions();
+      this.WillDrawRectangle=true;
     },
     brush(){
-           this.rectangle=false;
-       this.circ=false;
-      this.ellips=false;
-      this.lin=false;
-      this.sqrt=false;
-      this.tria=false;
-      this.cofill=false;
-      this.delete=false;
-      this.coledge=false;
-      this.bru=true;
-         this.str=false;
-      this.poly=false;
+       this.DeactivitateOptions();
+       this.WillUseBrush=true;
     },
     ellipse()
     {
-       this.rectangle=false;
-       this.circ=false;
-      this.ellips=true;
-      this.lin=false;
-      this.sqrt=false;
-      this.tria=false;
-      this.cofill=false;
-      this.delete=false;
-      this.coledge=false;
-      this.bru=false;
-         this.str=false;
-      this.poly=false;
+       this.DeactivitateOptions();
+       this.WillDrawEllipse=true;
     }, 
     star()
     {
-       this.rectangle=false;
-       this.circ=false;
-      this.ellips=false;
-      this.str=true;
-      this.lin=false;
-      this.sqrt=false;
-      this.tria=false;
-      this.cofill=false;
-      this.delete=false;
-      this.coledge=false;
-      this.bru=false;
-      this.poly=false;
+      this.DeactivitateOptions();
+      this.WillDrawStar=true;
     }, 
     circle()
     {
-         this.rectangle=false;
-       this.circ=true;
-      this.ellips=false;
-      this.lin=false;
-      this.sqrt=false;
-      this.tria=false;
-      this.cofill=false;
-      this.delete=false;
-      this.coledge=false;
-      this.bru=false;
-      this.str=false;
-      this.poly=false;
+        this.DeactivitateOptions();
+        this.WillDrawCircle=true;
     },
     line()
     {
-           this.rectangle=false;
-       this.circ=false;
-      this.ellips=false;
-      this.lin=true;
-      this.sqrt=false;
-      this.tria=false;
-      this.cofill=false;
-      this.delete=false;
-      this.coledge=false;
-      this.bru=false;
-        this.str=false;
-      this.poly=false;
+      this.DeactivitateOptions();
+      this.WillDrawLine=true;
     },
     square()
     {
-
-          this.rectangle=false;
-       this.circ=false;
-      this.ellips=false;
-      this.lin=false;
-      this.sqrt=true;
-      this.tria=false;
-      this.cofill=false;
-      this.delete=false;
-      this.coledge=false;
-      this.bru=false;
-        this.str=false;
-      this.poly=false;
+      this.DeactivitateOptions();
+      this.WillDrawSquare=true;
     },
     triangle()
     {
-          this.rectangle=false;
-       this.circ=false;
-      this.ellips=false;
-      this.lin=false;
-      this.sqrt=false;
-      this.tria=true;
-      this.cofill=false;
-      this.delete=false;
-      this.coledge=false;
-      this.bru=false;
-        this.str=false;
-      this.poly=false;
+      this.DeactivitateOptions();
+      this.WillDrawTriangle=true;
     },
     fill(){
-
-          this.rectangle=false;
-       this.circ=false;
-      this.ellips=false;
-      this.lin=false;
-      this.sqrt=false;
-      this.tria=false;
-      this.cofill=true;
-      this.delete=false;
-      this.coledge=false;
-      this.bru=false;
-        this.str=false;
-      this.poly=false;
-
+      this.DeactivitateOptions();
+      this.WillChangeColorfill=true;
     },
     edge(){
-        this.rectangle=false;
-       this.circ=false;
-      this.ellips=false;
-      this.lin=false;
-      this.sqrt=false;
-      this.tria=false;
-      this.cofill=false;
-      this.delete=false;
-      this.coledge=true;
-      this.bru=false;
-        this.str=false;
-      this.poly=false;
-
+      this.DeactivitateOptions();
+      this.WillChangeColorEdge=true;
     },
-   polyg()
+      copy()
     {
-      this.rectangle=false;
-      this.circ=false;
-      this.ellips=false;
-      this.lin=false;
-      this.sqrt=false;
-      this.tria=false;
-      this.poly=true;
-      this.cofill=false;
-      this.delete=false;
-      this.coledge=false;
-      this.str=false;
-      this.bru=false;
+       this.DeactivitateOptions();
+       this.WillCopy=true;
+    },   
+    del()
+    {
+      this.DeactivitateOptions();
+      this.WillDelete=true;
     },
-
-
-
-  async  clr()
+  async clr()
     {
       this.circles=[];
       this.lines=[];
@@ -761,10 +394,7 @@ newpo(type, index,e) {
       this.ellipses=[];
       this.shapes=[];
       this.stars =[];
-      this.polygons=[];
-      this.un=0;
-      this.re=0;
-      this.shapeid=-1;
+      this.shapeid=0;
              await fetch('http://localhost:8080/clear', {
         method: 'GET',
       }).catch(error => {
@@ -773,572 +403,17 @@ newpo(type, index,e) {
     
     
     },
-    copy()
-    {
-      this.cop=true;
-    },
-
-    async shapeClicked(type, index) {
-
-
-    if(type==='Polygon')
-     {
-       this.shapeType = "Polygon"
-        let v=0;
-     for(let i=0;i<this.shapes.length;i++)
-        {
-           if(this.shapes[i]!==null)
-          {
-                  if(this.shapes[i].id===this.polygons[index].id)
-                  {
-                    v=i;
-                    break;
-                  }
-          }
-        
-        }
-         console.log(v);
-        if(this.cop)
-        {
-          this.updateTransformer();
-          this.un++;
-          this.ord=v;
-          console.log(this.shapes[v])
-          await this.prototype();
-          console.log(this.co)
-          this.polygons.push({...this.co})
-          this.shapes.push({...this.co})
-          this.cop = false
-          this.shapeid++
-        }
-        if(this.delete)
-        {
-         
-           this.un++; 
-              this.polygons.splice(index,1);
-               this.modifysh=this.shapes[v];
-                    this.ord=v;
-                    this.modify2()
-              this.delete=false;
-              this.selectedid=-1;
-               this.updateTransformer();
-        }
-
-       if (this.cofill) {
-        this.un++;
-        let   selectedFillColor = this.pureColor; // Store the selected fill color in a variable
-        this.selectedColor2= selectedFillColor
-        this.polygons[index].fill = selectedFillColor;
-        this.shapes[v].fill=this.polygons[index].fill;       // Assign the selected fill color to the fill property of the shape object
-        selectedFillColor=this.pureColor
-        this.cofill = false;
-        this.pureColor = '#ffffff'; // Reset the pureColor to a default value or another selected fill color
-          this.modifysh=this.shapes[v];
-             this.ord=v;
-              this.modify()
-                 }
-             if(this.coledge){
-              this.un++;
-              let selectedEdgeColor = this.pureColor; // Use the selected edge color
-          this.polygons[index].stroke = selectedEdgeColor; 
-          this.shapes[v].stroke=this.polygons[index].stroke; // Assign the selected edge color to the stroke property of the shape object
-          this.coledge = false;
-          this.pureColor = '#ffffff'; // Reset the pureColor2 to a default value or another selected edge color
-                 this.modifysh=this.shapes[v];
-                  this.ord=v;
-                 this.modify() 
-       
-          }
-       
-        
-     }
-
-     else if(type==='triangle')
-     {
-      this.shapeType = "Triangle"
-         console.log(index);
-        let v=0;
-    for(let i=0;i<this.shapes.length;i++)
-        {
-          if(this.shapes[i]!==null)
-          {
-                  if(this.shapes[i].id===this.triangles[index].id)
-                  {
-                    v=i;
-                    break;
-                  }
-          }
-        
-        }
-          console.log(v);
-        if(this.cop)
-        {
-          this.un++;
-          this.ord=v;
-          console.log(this.shapes[v])
-          await this.prototype();
-          console.log(this.co)
-          this.triangles.push({...this.co})
-          this.shapes.push({...this.co})
-          this.cop = false
-          this.shapeid++
-        }
-        if(this.delete)
-        {
-           this.un++; 
-              this.triangles.splice(index,1);
-               this.modifysh=this.shapes[v];
-                    this.ord=v;
-                    this.modify2()
-              this.delete=false;
-            
-        }
-
-       if (this.cofill) {
-        this.un++;
-        let   selectedFillColor = this.pureColor; // Store the selected fill color in a variable
-        this.selectedColor2= selectedFillColor
-        this.triangles[index].fill = selectedFillColor;
-        this.shapes[v].fill=this.triangles[index].fill;       // Assign the selected fill color to the fill property of the shape object
-        selectedFillColor=this.pureColor
-        this.cofill = false;
-        this.pureColor = '#ffffff'; // Reset the pureColor to a default value or another selected fill color
-          this.modifysh=this.shapes[v];
-             this.ord=v;
-              this.modify()
-                 }
-             if(this.coledge){
-              this.un++;
-              let selectedEdgeColor = this.pureColor; // Use the selected edge color
-          this.triangles[index].stroke = selectedEdgeColor; 
-          this.shapes[v].stroke=this.triangles[index].stroke; // Assign the selected edge color to the stroke property of the shape object
-          this.coledge = false;
-          this.pureColor = '#ffffff'; // Reset the pureColor2 to a default value or another selected edge color
-                 this.modifysh=this.shapes[v];
-                  this.ord=v;
-                 this.modify() 
-       
-          }
-       
-       /*********************************************************************** */
-        
-     }
-     else if(type==='circle')
-     {
-       this.shapeType = "Circle"
-       let v=0;
-     for(let i=0;i<this.shapes.length;i++)
-        {
-         // console.log(this.shapes[i].id)
-          if(this.shapes[i]!==null)
-          {
-                  if(this.shapes[i].id===this.circles[index].id)
-                  {
-                    v=i;
-                    break;
-                  }
-          }
-        
-        }
-          console.log(v);
-         if(this.cop)
-        {
-          this.un++;
-          this.ord=v;
-          console.log(this.shapes[v])
-          await this.prototype();
-          console.log(this.co)
-          this.circles.push({...this.co})
-          this.shapes.push({...this.co})
-          this.cop = false
-          this.shapeid++;
-           
-        }
-          if(this.delete)
-        {
-          this.un++;
-         
-              this.circles.splice(index,1);
-
-                this.delete=false;
-                    this.ord=v;
-                  this.modify2()
-        }
-        if (this.cofill) {
-              this.un++;
-        let   selectedFillColor = this.pureColor; // Store the selected fill color in a variable
-        this.circles[index].fill = selectedFillColor; 
-           this.shapes[v].fill=this.circles[index].fill;   // Assign the selected fill color to the fill property of the shape object
-        selectedFillColor=this.pureColor
-        this.cofill = false;
-        this.pureColor = '#ffffff'; // Reset the pureColor to a default value or another selected fill color
-             this.modifysh=this.shapes[v];
-              this.ord=v;
-            this.modify()
-              
-                 }
-                if(this.coledge){
-                  this.un++;
-             let selectedEdgeColor = this.pureColor; // Use the selected edge color
-          this.circles[index].stroke = selectedEdgeColor; 
-          this.shapes[v].stroke=this.circles[index].stroke; // Assign the selected edge color to the stroke property of the shape object
-          this.coledge = false;
-          this.pureColor = '#ffffff'; // Reset the pureColor2 to a default value or another selected edge color
-              this.modifysh=this.shapes[v];
-              this.ord=v;
-              this.modify()    
-        
-       
-     }  
-       
-     }
-     else if(type==='line')
-     {
-      let v=0;
-       this.shapeType = "Line"
-      
-    for(let i=0;i<this.shapes.length;i++)
-        {
-          if(this.shapes[i]!==null)
-          {
-                  if(this.shapes[i].id===this.lines[index].id)
-                  {
-                    v=i;
-                    break;
-                  }
-          }
-        
-        }
-        console.log(v);
-         if(this.cop)
-        {
-          this.un++;
-          this.ord=v;
-          console.log(this.shapes[v])
-          await this.prototype();
-          console.log(this.co)
-          this.lines.push({...this.co})
-          this.shapes.push({...this.co})
-          this.cop = false
-          this.shapeid++; 
-           
-        }
-             if(this.delete)
-        {
-            this.un++;
-              this.lines.splice(index,1);
-                this.delete=false;
-                  this.ord=v;
-                  this.modify2()
-        }
-        if(this.coledge){
-          this.un++;
-             let selectedEdgeColor = this.pureColor; // Use the selected edge color
-          this.lines[index].stroke = selectedEdgeColor; // Assign the selected edge color to the stroke property of the shape object
-          this.coledge = false;
-          this.shapes[v].stroke=this.lines[index].stroke;
-          this.pureColor = '#ffffff'; // Reset the pureColor2 to a default value or another selected edge color
-                  this.modifysh=this.shapes[v];
-                    this.ord=v;
-                  this.modify()
-        }
-     }
-     /************************************************************ */
-     else if(type==='rect')
-     {
-      let v=0;
-       this.shapeType = "Rectangle"
-   for(let i=0;i<this.shapes.length;i++)
-        {
-         // console.log(this.shapes[i].id)
-          if(this.shapes[i]!==null)
-          {
-                  if(this.shapes[i].id===this.rectangles[index].id)
-                  {
-                    v=i;
-                    break;
-                  }
-          }
-        
-        }
-        console.log(v);
-         if(this.cop)
-        {
-          this.un++;
-          this.ord=v;
-          console.log(this.shapes[v])
-          await this.prototype();
-          console.log(this.co)
-          this.rectangles.push({...this.co})
-          this.shapes.push({...this.co})
-          this.cop = false
-          this.shapeid++;
-           
-        }
-             if(this.delete)
-        {
-             this.un++;
-              this.rectangles.splice(index,1);
-                this.delete=false;
-                this.ord=v;
-              this.modify2()
-        }
-        if (this.cofill) {
-          this.un++;
-        let selectedFillColor = this.pureColor; // Store the selected fill color in a variable
-        this.rectangles[index].fill = selectedFillColor; // Assign the selected fill color to the fill property of the shape object
-        //selectedFillColor=this.pureColor
-        this.shapes[v].fill=this.rectangles[index].fill;
-        this.cofill = false;
-        this.pureColor = '#ffffff'; // Reset the pureColor to a default value or another selected fill color
-                this.modifysh=this.shapes[v];
-                this.ord=v;
-                 this.modify()
-                 }
-        if(this.coledge){
-          this.un++;
-             let selectedEdgeColor = this.pureColor; // Use the selected edge color
-          this.rectangles[index].stroke = selectedEdgeColor; // Assign the selected edge color to the stroke property of the shape object
-          this.shapes[v].stroke=this.rectangles[index].stroke;
-          this.coledge = false;
-          this.pureColor = '#ffffff'; // Reset the pureColor2 to a default value or another selected edge color
-               this.modifysh=this.shapes[v];
-                this.ord=v;
-               this.modify()   
-        
-       
-     }
-     }
-     /*************************************************************** */
-      else if(type==='ellipse') {
-        let v=0;
-         this.shapeType = "Ellipse"
-   for(let i=0;i<this.shapes.length;i++)
-        {
-         // console.log(this.shapes[i].id)
-          if(this.shapes[i]!==null)
-          {
-                  if(this.shapes[i].id===this.ellipses[index].id)
-                  {
-                    v=i;
-                    break;
-                  }
-          }
-        
-        }
-          console.log(v);
-        if(this.cop)
-        { 
-          this.un++;
-          this.ord=v;
-          console.log(this.shapes[v])
-          await this.prototype();
-          console.log(this.co)
-          this.ellipses.push({...this.co})
-          this.shapes.push({...this.co})
-          this.cop = false
-          this.shapeid++;
-           
-        }
-        if(this.delete)
-        {
-              this.un++;
-              this.ellipses.splice(index,1);
-                this.delete=false;
-               this.modifysh=this.shapes[v];
-                   this.ord=v;
-                  this.modify2()
-
-        }
-          if (this.cofill) {
-            this.un++;
-      let selectedFillColor = this.pureColor;
-      this.ellipses[index].fill = selectedFillColor;
-      this.shapes[v].fill=this.ellipses[index].fill;
-      this.cofill = false;
-      this.pureColor = '#ffffff';
-        this.modifysh=this.shapes[v];
-           this.ord=v;
-         this.modify()
-    }
-
-        if(this.coledge){
-          this.un++;
-           let selectedEdgeColor = this.pureColor; // Use the selected edge color
-          this.ellipses[index].stroke = selectedEdgeColor; // Assign the selected edge color to the stroke property of the shape object
-            this.shapes[v].stroke=this.ellipses[index].stroke;
-          this.coledge = false;
-          this.pureColor = '#ffffff'; // Reset the pureColor2 to a default value or another selected edge color
-                 this.modifysh=this.shapes[v];
-               this.ord=v;
-            this.modify() 
-       
-     }
-        }
-      else if(type==='star') {
-        let v=0;
-         this.shapeType = "Star"
-  for(let i=0;i<this.shapes.length;i++)
-        {
-         // console.log(this.shapes[i].id)
-          if(this.shapes[i]!==null)
-          {
-                  if(this.shapes[i].id===this.stars[index].id)
-                  {
-                    v=i;
-                    break;
-                  }
-          }
-        
-        }
-          console.log(v);
-        if(this.cop)
-        { 
-          this.un++;
-          this.ord=v;
-          console.log(this.shapes[v])
-          await this.prototype();
-          console.log(this.co)
-          this.stars.push({...this.co})
-          this.shapes.push({...this.co})
-          this.cop = false
-          this.shapeid++;
-           
-        }
-      if(this.delete)
-        {
-              this.un++;
-              this.stars.splice(index,1);
-                this.delete=false;
-               this.modifysh=this.shapes[v];
-                   this.ord=v;
-                  this.modify2()
-
-        }
-        if (this.cofill) {
-            this.un++;
-      let selectedFillColor = this.pureColor;
-      this.stars[index].fill = selectedFillColor;
-      this.shapes[v].fill=this.stars[index].fill;
-      this.cofill = false;
-      this.pureColor = '#ffffff';
-        this.modifysh=this.shapes[v];
-           this.ord=v;
-         this.modify()
-    }
-
-        if(this.coledge){
-          this.un++;
-           let selectedEdgeColor = this.pureColor; // Use the selected edge color
-          this.stars[index].stroke = selectedEdgeColor; // Assign the selected edge color to the stroke property of the shape object
-            this.shapes[v].stroke=this.stars[index].stroke;
-          this.coledge = false;
-          this.pureColor = '#ffffff'; // Reset the pureColor2 to a default value or another selected edge color
-          this.modifysh=this.shapes[v];
-          this.ord=v;
-          this.modify() 
-       
-     }
-        }
-       
-     else if(type==='square')
-     {
-      console.log("xx");
-      let v=0;
-        this.shapeType = "Square"
-    for(let i=0;i<this.shapes.length;i++)
-        {
-         // console.log(this.shapes[i].id)
-          if(this.shapes[i]!==null)
-          {
-                  if(this.shapes[i].id===this.squares[index].id)
-                  {
-                    v=i;
-                    break;
-                  }
-          }
-        
-        }
-        console.log(v);
-         if(this.cop)
-        {
-          console.log(this.shapes[v]);
-          this.un++;
-         this.ord=v;
-          console.log(this.shapes[v])
-          await this.prototype();
-          console.log(this.co)
-          this.squares.push({...this.co})
-          this.shapes.push({...this.co})
-          this.cop = false
-          this.shapeid++;
-           
-           
-        }
-               if(this.delete)
-        {
-            this.un++;
-              this.squares.splice(index,1);
-                this.delete=false;
-                  this.ord=v;
-                this.modify2()
-        }
-      if (this.cofill) {
-        this.un++;
-        let   selectedFillColor = this.pureColor; // Store the selected fill color in a variable
-        this.selectedColor2= selectedFillColor
-        this.squares[index].fill = selectedFillColor; // Assign the selected fill color to the fill property of the shape object
-        selectedFillColor=this.pureColor
-          this.shapes[v].fill=this.squares[index].fill;
-        this.cofill = false;
-        this.pureColor = '#ffffff'; // Reset the pureColor to a default value or another selected fill color
-          this.modifysh=this.shapes[v];
-          this.ord=v;
-           this.modify()
-        
-                 }
-        if(this.coledge)
-        {
-          this.un++;
-                  let selectedEdgeColor = this.pureColor; // Use the selected edge color
-          this.squares[index].stroke = selectedEdgeColor; // Assign the selected edge color to the stroke property of the shape object
-          this.coledge = false;
-            this.shapes[v].stroke=this.squares[index].stroke;
-          this.pureColor = '#ffffff'; // Reset the pureColor2 to a default value or another selected edge color
-            this.modifysh=this.shapes[v];
-            this.ord=v;
-           this.modify()
-                
-        }         
-       
-       
-     }
-
-    },
- 
-
-    del()
-    {
-      this.rectangle=false;
-      this.circ=false;
-      this.ellips=false;
-      this.str=false;
-      this.lin=false;
-      this.sqrt=false;
-      this.tria=false;
-      this.cofill=false;
-      this.delete=true;
-      this.coledge=false;
-      this.bru=false;
-      this.cop=false;
+  
+    async shapeClicked(type, index) {    //TODO
+     
     },
       draw() {
-        this.selectedid=-1;
-        this.updateTransformer();
-     if(this.rectangle)
-      {
           this.shapeid++;
           this.isdraw = true;
+        this.selectedid=-1;
+        this.updateTransformer();
+     if(this.WillDrawRectangle)
+      {
       const stage = this.$refs.stage.getStage();
       if (stage) {
         const position = stage.getPointerPosition();
@@ -1357,14 +432,10 @@ newpo(type, index,e) {
                   scaleX : 1,
                  scaleY : 1
           };
-          console.log(this.currentShape.x);
-          console.log(this.currentShape.y);
         }
       }
       }
-      else if(this.circ){
-          this.shapeid++;
-                this.isdraw = true;
+      else if(this.WillDrawCircle){
       const stage = this.$refs.stage.getStage();
       if (stage) {
         const position = stage.getPointerPosition();
@@ -1385,10 +456,8 @@ newpo(type, index,e) {
         }
       }
       }
-      else if(this.ellips)
+      else if(this.WillDrawEllipse)
       {
-          this.shapeid++;
-           this.isdraw = true;
           const stage = this.$refs.stage.getStage();
           if (stage) {
             const position = stage.getPointerPosition();
@@ -1410,10 +479,8 @@ newpo(type, index,e) {
             }
           }
       }
-      else if(this.str)
+      else if(this.WillDrawStar)
       {
-          this.shapeid++;
-           this.isdraw = true;
           const stage = this.$refs.stage.getStage();
           if (stage) {
             const position = stage.getPointerPosition();
@@ -1436,10 +503,8 @@ newpo(type, index,e) {
             }
           }
       }
-      else if(this.lin)
+      else if(this.WillDrawLine)
       {
-          this.shapeid++;
-              this.isdraw = true;
           const stage = this.$refs.stage.getStage();
           if (stage) {
             const position = stage.getPointerPosition();
@@ -1459,10 +524,8 @@ newpo(type, index,e) {
             }
           }
       }
-      else if(this.sqrt)
+      else if(this.WillDrawSquare)
       {
-          this.shapeid++;
-            this.isdraw = true;
           const stage = this.$refs.stage.getStage();
           if (stage) {
             const position = stage.getPointerPosition();
@@ -1484,10 +547,8 @@ newpo(type, index,e) {
             }
           }
       }
-      else if(this.tria)
+      else if(this.WillDrawTriangle)
       {
-         this.shapeid++;
-          this.isdraw = true;
           const stage = this.$refs.stage.getStage();
           if (stage) {
             const position = stage.getPointerPosition();
@@ -1508,37 +569,8 @@ newpo(type, index,e) {
             }
           }
       }
-      else if(this.poly)
+        else if(this.WillUseBrush)
       {
-             this.shapeid++;
-          this.isdraw = true;
-          const stage = this.$refs.stage.getStage();
-          if (stage) {
-            const position = stage.getPointerPosition();
-            if (position) {
-              this.currentShape = {
-               x: position.x,
-                y: position.y,
-                type:'Polygon',
-                strokeWidth:2,
-                fill:this.pureColor,
-                stroke:this.pureColor2,
-                radius:150,
-                  id:String(this.shapeid),
-                     rotation : 0,
-                     scaleX : 1,
-                     scaleY : 1
-
-              };
-              
-            }
-          }
-      }
-      
-   
-        else if(this.bru)
-      {
-            this.isdraw = true;
           const stage = this.$refs.stage.getStage();
           if (stage) {
             const position = stage.getPointerPosition();
@@ -1558,12 +590,10 @@ newpo(type, index,e) {
         this.stopDrawing();
     },
     stopDrawing() {
-      console.log(this.currentShape);
-      this.un++;
           if (this.isdraw) {
         this.isdraw = false;
-        console.log("xxxxx");
-        if(this.circ)
+        
+        if(this.WillDrawCircle)
         {
           this.shapeType = 'Circle';
                      this.circles.push({ ...this.currentShape });
@@ -1571,31 +601,29 @@ newpo(type, index,e) {
                  
         }
       
-      else if(this.rectangle){
+      else if(this.WillDrawRectangle){
         this.shapeType = 'Rectangle';
 
           this.rectangles.push({...this.currentShape});
             this.shapes.push({...this.currentShape});
         
-      }
-      
-      else if(this.ellips)
+      }      
+      else if(this.WillDrawEllipse)
       {
         this.shapeType = 'Ellipse';
 
            this.ellipses.push({...this.currentShape});
              this.shapes.push({...this.currentShape});
       }
-      else if(this.str)
+      else if(this.WillDrawStar)
       {
-        console.log("brt");
         this.shapeType = 'Star';
 
            this.stars.push({...this.currentShape});
            this.shapes.push({...this.currentShape});
       }
            
-      else if(this.lin)
+      else if(this.WillDrawLine)
       {
         this.shapeType = 'Line';
 
@@ -1603,7 +631,7 @@ newpo(type, index,e) {
                this.shapes.push({...this.currentShape});
       }
           
-      else if(this.sqrt)
+      else if(this.WillDrawSquare)
       {
         this.shapeType = 'Square';
 
@@ -1611,24 +639,17 @@ newpo(type, index,e) {
                   this.shapes.push({...this.currentShape});
       }
           
-      else if(this.tria)
+      else if(this.WillDrawTriangle)
       {
-        this.shapeType = 'Triangle';
-
+            this.shapeType = 'Triangle';
              this.triangles.push({...this.currentShape}); 
                 this.shapes.push({...this.currentShape});
       }
-        else if(this.bru)
+        else if(this.WillUseBrush)
       {
           this.brus.push({...this.currentShape});
       }
-      else if(this.poly)
-      {
-          this.shapeType = 'Polygon';
-           this.polygons.push({...this.currentShape}); 
-                this.shapes.push({...this.currentShape});
-      }
-      this.createShape();
+       this.createShape();
         this.currentShape = null;
       }
     },
@@ -1669,250 +690,6 @@ newpo(type, index,e) {
         console.error('Fetch error:', error);
       });
     },
-   async saving()
-      {
-        console.log(this.savejason)
-        if(this.savjason){
-        await fetch('http://localhost:8080/saveJson', {
-          method: 'POST',
-          body: this.path+".json",
-        }).catch(error => {
-          console.error('Fetch error:', error);
-        });
-      }
-      if(this.savxml){
-        await fetch('http://localhost:8080/saveXml', {
-          method: 'POST',
-          body: this.path + ".xml",
-        }).catch(error => {
-          console.error('Fetch error:', error);
-        });
-        console.log(this.savexml)
-      }
-      },
-
-     async loading(){
-      this.un = 0
-      this.re = 0 
-        if(this.lodjason){
-        await fetch('http://localhost:8080/loadJson', {
-          method: 'POST',
-          body: (this.path + ".json"),
-        })
-        .then(res => res.json())
-        .then(data => this.shapes = data)
-        console.log(this.shapes)
-        
-      this.circles=[];
-      this.lines=[];
-      this.squares=[];
-      this.rectangles=[];
-      this.triangles=[];
-      this.ellipses=[];
-      this.stars=[];
-      this.polygons = [];
-   
-         for(let i=0;i<this.shapes.length;i++)
-      {
-        if(this.shapes[i]!==null)
-        {
-               if(this.shapes[i].type==='Rectangle')
-          {
-             this.rectangles.push({...this.shapes[i]});
-          }
-          else if(this.shapes[i].type==='Circle')
-          {
-              this.circles.push({...this.shapes[i]});
-          }
-          else if(this.shapes[i].type==='Ellipse')
-          {
-            this.ellipses.push({...this.shapes[i]})
-          }
-          else if(this.shapes[i].type==='Star')
-          {
-            this.stars.push({...this.shapes[i]})
-          }
-         else  if(this.shapes[i].type==='Square')
-          {
-             this.squares.push({...this.shapes[i]});
-          }
-          else if(this.shapes[i].type==='Triangle')
-          {
-            this.triangles.push({...this.shapes[i]});
-          }
-         else if(this.shapes[i].type==='Line')
-         {
-             this.lines.push({...this.shapes[i]});
-         }
-         else if(this.shapes[i].type==='Polygon')
-         {
-              this.polygons.push({...this.shapes[i]});
-         }
-        }
-        
-         
-      }
-          if(this.shapes.length!==0)
-          {
-              this.shapeid=Number(this.shapes[this.shapes.length-1].id);
-          }
-          else
-          { 
-              this.shapeid=-1;  
-          }
-         
-      }
-      if(this.lodxml){
-        this.un = 0
-        this.re = 0
-        await fetch('http://localhost:8080/loadXml', {
-          method: 'POST',
-          body: this.path+".xml",
-        })
-        .then(res => res.json())
-        .then(data => this.shapes = data)
-        console.log(this.shapes)
-           
-      this.circles=[];
-      this.lines=[];
-      this.squares=[];
-      this.rectangles=[];
-      this.triangles=[];
-      this.ellipses=[];
-      this.stars=[];
-      this.polygons = [];
-      
-        for(let i=0;i<this.shapes.length;i++)
-      {
-        if(this.shapes[i]!==null)
-        {
-               if(this.shapes[i].type==='Rectangle')
-          {
-             this.rectangles.push({...this.shapes[i]});
-          }
-          else if(this.shapes[i].type==='Circle')
-          {
-              this.circles.push({...this.shapes[i]});
-          }
-          else if(this.shapes[i].type==='Ellipse')
-          {
-            this.ellipses.push({...this.shapes[i]})
-          }
-          else if(this.shapes[i].type==='Star')
-          {
-            this.stars.push({...this.shapes[i]})
-          }
-         else  if(this.shapes[i].type==='Square')
-          {
-             this.squares.push({...this.shapes[i]});
-          }
-          else if(this.shapes[i].type==='Triangle')
-          {
-            this.triangles.push({...this.shapes[i]});
-          }
-         else if(this.shapes[i].type==='Line')
-         {
-             this.lines.push({...this.shapes[i]});
-         }
-         else if(this.shapes[i].type==='Polygon')
-         {
-              this.polygons.push({...this.shapes[i]});
-         }
-        }
-         
-      }
-        if(this.shapes.length!==0)
-          {
-              this.shapeid=Number(this.shapes[this.shapes.length-1].id);
-          }
-          else
-          { 
-              this.shapeid=-1;  
-          }
-    }
-
-     },
-        savejason(){
-      this.savjason=true;
-      this.savxml=false;
-    },
-    savexml(){
-      this.savxml=true;
-      this.savjason=false;
-    }, 
-      submity(){
-        this.savdialog=false;
-        this.pathdialog=true;
-      } , 
-      ok(){
-        this.loaddialog=false;
-        this.pathloaddialog=true;
-
-      },
-      save()
-      {
-          this.saving();
-          this.savdialog=true;
-      },  
-      send(){
-        var str=document.getElementById('path').value;
-        for(let i=0 ;i<str.length;i++)
-        {
-          if(str[i]=='\\')
-          {
-
-            this.path+='\\'
-
-          }
-          this.path+=str[i];
-        }
-        console.log(this.savjason)
-        console.log(this.savxml)
-        console.log(this.path)
-        this.pathdialog=false;
-        this.saving();
-        this.savjaso=false;
-        this.savxml=false;
-        this.path = ""
-      },
-      laod(){
-        this.loaddialog=true;
-      },
-      loadjason(){
-        this.lodjason=true;
-        this.lodxml=false;
-
-      },
-      loadxml(){
-        this.lodxml=true;
-        this.lodjason=false;
-      },
-      open()
-      {
-        var str=document.getElementById('pathload').value;
-        for(let i=0 ;i<str.length;i++)
-        {
-          if(str[i]=='\\')
-          {
-
-            this.path+='\\'
-
-          }
-          this.path+=str[i];
-        }
-        console.log(this.lodjason)
-        console.log(this.lodxml)
-        console.log(this.path)
-        this.pathloaddialog=false;
-        this.loading();
-        this.lodjason=false;
-        this.lodxml=false;
-        this.path = ""
-
-      },
-
-     
-
 async undo() {
   if (this.un !== 0) {
     await fetch('http://localhost:8080/undo', {
@@ -1970,7 +747,7 @@ async undo() {
       {
         
 
-               await fetch('http://localhost:8080/redo', {
+        await fetch('http://localhost:8080/redo', {
         method: 'GET',
       })
       .then(res => res.json())
@@ -2117,13 +894,6 @@ async undo() {
             shape.scaleY = e.target.scaleY();
         }
         
-
-
-
-
-
-
-
       console.log(shape);
       this.modify();
       
