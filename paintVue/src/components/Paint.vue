@@ -231,30 +231,6 @@ draggable:false,
 
 </v-line>
 
-<!-- Hexagon -->
-<v-regular-polygon
-v-for="(polygon, index) in polygons"
-:key="index"
-:config="{
-x: polygon.x,
-y: polygon.y,
-sides:6,
-radius:polygon.radius,
-fill: polygon.fill, 
-stroke: polygon.stroke, 
-strokeWidth: 5,
-draggable:true,
-id:polygon.id,
- rotation:polygon.rotation,
-scaleX:polygon.scaleX,
-scaleY:polygon.scaleY
-}"
- @transformend="handleTransformEnd"
-@click="shapeClicked('Polygon', index)"
-@dragend="newpo('Polygon', index, $event)"   
->
-</v-regular-polygon>
-
 <v-transformer ref="transformer" />
 </v-layer>
 </v-stage>
@@ -302,11 +278,6 @@ scaleY:polygon.scaleY
 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
   <polygon points="12 2 15.09 8 22 9.27 17 14 18.18 20 12 17.09 5.82 20 7 14 2 9.27 8 8 12"></polygon>
 </svg>
-</button>
-<button title="Hexagon" @click="polyg()" class="custom-btn">
-  <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-    <polygon points="12,2 22,7 22,17 12,22 2,17 2,7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  </svg>
 </button>
 <button title="Line" @click="line()" class="custom-btn">  
 <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
