@@ -5,7 +5,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ShapesController {
-
+    private final ShapesService shapesService;
     @Autowired
-    ShapesService myApp;
+    public ShapesController(ShapesService shapesService) {
+
+        this.shapesService = shapesService;
+        this.shapesService.initialize();
+    }
 }
