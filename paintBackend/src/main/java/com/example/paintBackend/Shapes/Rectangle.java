@@ -2,10 +2,15 @@ package com.example.paintBackend.Shapes;
 
 public class Rectangle extends AbstractShape {
 
-    private final String type="Rectangle";
+    private  String type;
     private double width;
+
     private double height;
     private String fill;
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public String getFill() {
         return fill;
@@ -33,6 +38,16 @@ public class Rectangle extends AbstractShape {
 
     public void setHeight(double height) {
         this.height = height;
+    }
+
+    @Override
+    public String toString() {
+        return "Rectangle{" +
+                "type='" + type + '\'' +
+                ", width=" + width +
+                ", height=" + height +
+                ", fill='" + fill + '\'' +
+                '}';
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.example.paintBackend.Shapes;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,10 +19,9 @@ public class ShapesController {
         this.shapesService.initialize();
     }
     @PostMapping("/create")
-    public void CreateShape(@RequestBody String data)
-    {
-
-
+    public void CreateShape(@RequestBody String data) throws JsonProcessingException {
+           String[]operators=data.split(" ",3);
+           shapesService.createShape(operators[0],operators[1],operators[2]);
 
     }
 }

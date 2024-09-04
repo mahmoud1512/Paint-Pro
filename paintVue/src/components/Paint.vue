@@ -15,7 +15,7 @@ width: square.width,
 height: square.height,
 fill: square.fill, // Use the selected fill color
 stroke: square.stroke, // Use the selected edge color
-strokeWidth: 2 ,
+strokeWidth: square.strokeWidth ,
 draggable:true,
 id:square.id,
 rotation:square.rotation,
@@ -39,7 +39,7 @@ width: rect.width,
 height: rect.height,
 fill: rect.fill, // Use the selected fill color
 stroke: rect.stroke, // Use the selected edge color
-strokeWidth: 2 ,
+strokeWidth: rect.strokeWidth ,
 draggable:true,
 id:rect.id,
 rotation:rect.rotation,
@@ -62,7 +62,7 @@ y: circle.y,
 radius:circle.radius,
 fill:circle.fill,
 stroke:circle.stroke,
-strokeWidth: 2,
+strokeWidth: circle.strokeWidth,
 draggable:true,
 id:circle.id,
  rotation:circle.rotation,
@@ -86,7 +86,7 @@ radiusX:ellipse.radiusX,
 radiusY:ellipse.radiusY,
 fill: ellipse.fill, // Use the selected fill color
 stroke: ellipse.stroke, // Use the selected edge color
-strokeWidth: 2,
+strokeWidth: ellipse.strokeWidth,
 draggable:true,
 id:ellipse.id,
  rotation:ellipse.rotation,
@@ -113,7 +113,7 @@ outerRadius:star.outerRadius,
 numPoints:star.numPoints,
 fill: star.fill, // Use the selected fill color
 stroke: star.stroke, // Use the selected edge color
-strokeWidth: 2,
+strokeWidth: star.strokeWidth,
 draggable:true,
 id:star.id,
  rotation:star.rotation,
@@ -137,7 +137,7 @@ x : line.x,
 y : line.y,
 points:line.points,
 stroke: line.stroke,
-strokeWidth: 4,
+strokeWidth: line.strokeWidth,
 draggable:true,
 id:line.id,
  rotation:line.rotation,
@@ -172,20 +172,8 @@ scaleY:triangle.scaleY
 @click="shapeClicked('triangle', index)"
 @dragend="newpo('triangle', index, $event)"   
 >
-
 </v-regular-polygon>
-<!-- brush -->
-<v-line
-v-for="(line, index) in brus"
-:key="index"
-:config="{
-points:line.points,
-stroke: line.stroke,
-strokeWidth: 4,
-draggable:false,
-}"
->
-</v-line>
+
 
 <v-transformer ref="transformer" />
 </v-layer>
@@ -515,12 +503,12 @@ newpo(type, index,e) {    //TODO
                 y: position.y,
                 type:'Line',
                 stroke:this.pureColor2,
-                strokeWidth:10,
-                points: [0, 0,100,75],
+                strokeWidth:7,
+                points: [0, 0,200,80],
                  id:String(this.shapeid),
                    rotation : 0,
-                     scaleX : 2,
-                     scaleY : 2
+                     scaleX : 1,
+                     scaleY : 1
               };
             }
           }
@@ -555,17 +543,17 @@ newpo(type, index,e) {    //TODO
             const position = stage.getPointerPosition();
             if (position) {
               this.currentShape = {
-               x: position.x,
+                x: position.x,
                 y: position.y,
                 type:'Triangle',
                 strokeWidth:2,
                 fill:this.pureColor,
                 stroke:this.pureColor2,
                 radius:75,
-                  id:String(this.shapeid),
-                    rotation : 0,
-                     scaleX : 1,
-                     scaleY : 1
+                id:String(this.shapeid),
+                rotation : 0,
+                scaleX : 1,
+                scaleY : 1
               };
             }
           }
@@ -612,7 +600,7 @@ newpo(type, index,e) {    //TODO
         this.shapeType = 'Line';
 
              this.lines.push({...this.currentShape});
-               this.shapes.push({...this.currentShape});
+            this.shapes.push({...this.currentShape});
       }
           
       else if(this.WillDrawSquare)
@@ -630,13 +618,15 @@ newpo(type, index,e) {    //TODO
                 this.shapes.push({...this.currentShape});
       }
        this.createShape();
+       console.log(this.currentShape);
         this.currentShape = null;
+
       }
     },
     async createShape(){
       await fetch('http://localhost:8081/create', {
         method: 'POST',
-        body: (this.shapeType + " " +JSON.stringify(this.currentShape)),
+        body: (this.shapeType +" "+String(this.shapeid) +" " +JSON.stringify(this.currentShape)),
       }).catch(error => {
         console.error('Fetch error:', error);
       });
@@ -706,9 +696,7 @@ async undo() {
       this.triangles.push({ ...shape });
     } else if (shape.type === 'Line') {
       this.lines.push({ ...shape });
-    } else if (shape.type === 'Polygon') {
-      this.polygons.push({ ...shape });
-    }
+    } 
   }
 });
 
@@ -775,19 +763,10 @@ async undo() {
          {
              this.lines.push({...this.shapes[i]});
          }
-         else if(this.shapes[i].type==='Polygon')
-         {
-              this.polygons.push({...this.shapes[i]});
-         }
         }
          
-      }
-      this.re--;
-      this.un++;
-
-
-        
-      }
+      }  
+     }
       
     },
      handleTransformEnd(e) {
@@ -796,7 +775,7 @@ async undo() {
         if(this.shapes[i] !== null && this.shapes[i].id === this.selectedid)
           shape = this.shapes[i];
       }
-
+      console.log(shape);
 
       shape.x = e.target.x();
       shape.y = e.target.y();
@@ -808,7 +787,6 @@ async undo() {
       this.shapeType=shape.type;
       this.modifysh=shape;
 
-       this.un++;
         if(shape.type === "Square"){
             shape = this.squares.find((r) => r.id === this.selectedid)
             shape.x = e.target.x();
@@ -898,14 +876,14 @@ async undo() {
     
       const x= e.target.id();
 
-      // console.log(x)
+      
       let shape;
       for(let i = 0; i < this.shapes.length; i++){
         if(this.shapes[i] !== null && this.shapes[i].id === x)
           shape = this.shapes[i];
       }
 
-      // const shape = this.shapes.find((r) => r.id === x);
+      
 
       if (shape) {
         this.selectedid = x;
