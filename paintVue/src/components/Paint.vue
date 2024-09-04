@@ -4,7 +4,8 @@
 <v-stage :config="configKonva" ref="stage" @dblclick="draw" @click="handleClick"  @mousedown="handleStageMouseDown">
 <v-layer>
 <!-- drawing squares   -->
-<v-rect
+<!-- we assign index as access key for the object -->
+<v-rect                               
 v-for="(square, index) in squares"
 :key="index"
 :config="{
@@ -249,6 +250,7 @@ draggable:false,
 </template>
 
 <script>
+/* eslint-disable */
 import { ref } from "vue";
 import { ColorInputWithoutInstance } from "tinycolor2";
 
@@ -395,7 +397,7 @@ newpo(type, index,e) {    //TODO
       this.shapes=[];
       this.stars =[];
       this.shapeid=0;
-             await fetch('http://localhost:8080/clear', {
+      await fetch('http://localhost:8080/clear', {
         method: 'GET',
       }).catch(error => {
         console.error('Fetch error:', error);
@@ -408,9 +410,8 @@ newpo(type, index,e) {    //TODO
      
     },
       draw() {
-          this.shapeid++;
-          this.isdraw = true;
-        this.selectedid=-1;
+        this.shapeid++;
+        this.isdraw = true;
         this.updateTransformer();
      if(this.WillDrawRectangle)
       {
@@ -422,11 +423,11 @@ newpo(type, index,e) {    //TODO
             x: position.x,
             y: position.y,
             type:'Rectangle',
-             fill:this.pureColor,
+            fill:this.pureColor,
             stroke:this.pureColor2,
             strokeWidth:2,
-            width: 250,
-            height: 400,
+            width: 100,
+            height: 150,
               id:String(this.shapeid),
                 rotation : 0,
                   scaleX : 1,
@@ -447,11 +448,11 @@ newpo(type, index,e) {    //TODO
             fill:this.pureColor,
             stroke:this.pureColor2,
             strokeWidth:2,
-            radius: 200,
-               id:String(this.shapeid),
-                 rotation : 0,
-                     scaleX : 1,
-                     scaleY : 1
+            radius: 50,
+            id:String(this.shapeid),
+            rotation : 0,
+            scaleX : 1,
+            scaleY : 1
           };
         }
       }
@@ -467,10 +468,10 @@ newpo(type, index,e) {    //TODO
                 y: position.y,
                 type:'Ellipse',
                  fill:this.pureColor,
-            stroke:this.pureColor2,
-            strokeWidth:2,
-              radiusX: 200,
-              radiusY:130,
+                 stroke:this.pureColor2,
+                 strokeWidth:2,
+                 radiusX: 100,
+                 radiusY:65,
                 id:String(this.shapeid),
                   rotation : 0,
                      scaleX : 1,
@@ -492,8 +493,8 @@ newpo(type, index,e) {    //TODO
                  fill:this.pureColor,
                  stroke:this.pureColor2,
                strokeWidth:2,
-              innerRadius:130,
-              outerRadius:200,
+              innerRadius:65,
+              outerRadius:100,
               numPoints:6,
                 id:String(this.shapeid),
                   rotation : 0,
@@ -513,13 +514,13 @@ newpo(type, index,e) {    //TODO
                 x: position.x,
                 y: position.y,
                 type:'Line',
-            stroke:this.pureColor2,
-            strokeWidth:4,
-             points: [0, 0,200,150],
+                stroke:this.pureColor2,
+                strokeWidth:10,
+                points: [0, 0,100,75],
                  id:String(this.shapeid),
                    rotation : 0,
-                     scaleX : 1,
-                     scaleY : 1
+                     scaleX : 2,
+                     scaleY : 2
               };
             }
           }
@@ -537,8 +538,8 @@ newpo(type, index,e) {    //TODO
             strokeWidth:2,
              fill:this.pureColor,
             stroke:this.pureColor2,
-            width: 200,
-            height: 200,
+            width: 100,
+            height: 100,
               id:String(this.shapeid),
                 rotation : 0,
                      scaleX : 1,
@@ -560,7 +561,7 @@ newpo(type, index,e) {    //TODO
                 strokeWidth:2,
                 fill:this.pureColor,
                 stroke:this.pureColor2,
-                radius:150,
+                radius:75,
                   id:String(this.shapeid),
                     rotation : 0,
                      scaleX : 1,
@@ -569,35 +570,18 @@ newpo(type, index,e) {    //TODO
             }
           }
       }
-        else if(this.WillUseBrush)
-      {
-          const stage = this.$refs.stage.getStage();
-          if (stage) {
-            const position = stage.getPointerPosition();
-            if (position) {
-             this.currentShape = {
-            points: [position.x, position.y],
-            stroke: this.pureColor2,
-            strokeWidth: 4,
-          };
-            }
-          }
-        
-      }
-       this.selectedid=-1;
-        this.updateTransformer();
-      
+        this.updateTransformer();     
         this.stopDrawing();
     },
     stopDrawing() {
-          if (this.isdraw) {
+       if (this.isdraw) {
         this.isdraw = false;
         
         if(this.WillDrawCircle)
         {
           this.shapeType = 'Circle';
-                     this.circles.push({ ...this.currentShape });
-                     this.shapes.push({...this.currentShape});
+          this.circles.push({ ...this.currentShape });
+          this.shapes.push({...this.currentShape});
                  
         }
       
@@ -645,18 +629,14 @@ newpo(type, index,e) {    //TODO
              this.triangles.push({...this.currentShape}); 
                 this.shapes.push({...this.currentShape});
       }
-        else if(this.WillUseBrush)
-      {
-          this.brus.push({...this.currentShape});
-      }
        this.createShape();
         this.currentShape = null;
       }
     },
     async createShape(){
-      await fetch('http://localhost:8080/create', {
+      await fetch('http://localhost:8081/create', {
         method: 'POST',
-        body: (this.shapeType + JSON.stringify(this.currentShape)),
+        body: (this.shapeType + " " +JSON.stringify(this.currentShape)),
       }).catch(error => {
         console.error('Fetch error:', error);
       });
