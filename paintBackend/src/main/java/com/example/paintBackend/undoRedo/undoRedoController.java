@@ -8,5 +8,6 @@ public class undoRedoController {
     undoRedoService undoRedo;
     @Autowired
     public undoRedoController(undoRedoService service) {
+        this.undoRedo=service;
     }
 }
