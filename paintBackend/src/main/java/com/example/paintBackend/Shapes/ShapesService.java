@@ -6,7 +6,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -16,6 +18,7 @@ public class ShapesService {
     private ShapeFactory factory;
     @Autowired
     private undoRedoService undoRedoService;
+
 
     public void initialize() {
         this.IdShapeMapper=new HashMap<>();
@@ -51,5 +54,9 @@ public class ShapesService {
         this.undoRedoService.AddToUndoStack(modifyCommand);
         modifyCommand.execute();
 
+    }
+
+    public List<AbstractShape> getShapes() {
+        return new ArrayList<>(this.IdShapeMapper.values());
     }
 }
