@@ -21,6 +21,8 @@ public class ClearCommand implements ICommand{
 
     @Override
     public void unExecute() {
-         Original=new HashMap<>(Backup);
+        for (String key:Backup.keySet()) {
+            Original.put(key,Backup.get(key));
+        }
     }
 }

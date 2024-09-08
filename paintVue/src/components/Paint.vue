@@ -24,7 +24,7 @@ scaleY:square.scaleY
 }"
 @transformend="handleTransformEnd"
 @click="shapeClicked(square.id)"
-@dragend="getNewPosition('square', index, $event)"   
+@dragend="getNewPosition(square.id, $event)"   
 >
 
 </v-rect>
@@ -49,7 +49,7 @@ scaleY:rect.scaleY
 }"
 @transformend="handleTransformEnd"
 @click="shapeClicked(rect.id) "
-@dragend="getNewPosition('rect', index, $event)"   
+@dragend="getNewPosition(rect.id, $event)"   
 ></v-rect>
 
 <!-- drawing circles -->
@@ -71,7 +71,7 @@ scaleY:circle.scaleY
 }"
 @transformend="handleTransformEnd"
 @click="shapeClicked(circle.id)"
-@dragend="getNewPosition('circle', index, $event)"     >
+@dragend="getNewPosition(circle.id, $event)"     >
 
 </v-circle>
 
@@ -95,7 +95,7 @@ scaleY:ellipse.scaleY
 }"
 @transformend="handleTransformEnd"
 @click="shapeClicked(ellipse.id)"
-@dragend="getNewPosition('ellipse', index, $event)"   
+@dragend="getNewPosition(ellipse.id, $event)"   
 
 >
 
@@ -122,7 +122,7 @@ scaleY:star.scaleY
 }"
 @transformend="handleTransformEnd"
 @click="shapeClicked(star.id)"
-@dragend="getNewPosition('star', index, $event)"   
+@dragend="getNewPosition(star.id, $event)"   
 
 >
 
@@ -146,7 +146,7 @@ scaleY:line.scaleY
 }"
 @transformend="handleTransformEnd"
 @click="shapeClicked(line.id)"
-@dragend="getNewPosition('line', index, $event)"   
+@dragend="getNewPosition(line.id, $event)"   
 >
 
 </v-line>
@@ -170,7 +170,7 @@ scaleY:triangle.scaleY
 }"
 @transformend="handleTransformEnd"
 @click="shapeClicked(triangle.id)"
-@dragend="getNewPosition('triangle', index, $event)"   
+@dragend="getNewPosition(triangle.id, $event)"   
 >
 </v-regular-polygon>
 
@@ -283,8 +283,8 @@ export default  {
         modifysh:null, 
         co:null,
         length:200,
-        un:0,
-        re:0,
+        undos:0,
+        redos:0,
         shapeid:0,
          brus:[]
     };
@@ -319,7 +319,61 @@ export default  {
       this.WillChangeColorEdge=false;
       this.WillCopy=false;
     },
-getNewPosition(type, index,e) {    //TODO
+async getNewPosition(id,e) {    
+
+   let shape=this.shapes.find((obj)=>obj.id===id);
+   shape.x=e.target.x();
+   shape.y=e.target.y();
+   this.undos++;
+
+     if(shape.type==='Rectangle')
+            {
+              let rectangle = this.rectangles.find((x) => x.id === id);
+              rectangle.x=shape.x;
+              rectangle.y=shape.y;
+            } 
+            else if(shape.type==='Square')
+            {
+                let square = this.squares.find((x) => x.id === id);
+              square.x=shape.x;
+              square.y=shape.y;
+            }
+            else if(shape.type==='Triangle')
+            {
+                  let triangle = this.triangles.find((x) => x.id === id);
+                  triangle.x=shape.x;
+              triangle.y=shape.y;
+            }
+            else if(shape.type==='Ellipse')
+            {
+                let ellipse = this.ellipses.find((x) => x.id === id);
+                ellipse.x=shape.x;
+              ellipse.y=shape.y;
+            }
+            else if(shape.type==='Circle')
+            {
+                  let circle = this.circles.find((x) => x.id === id);
+              circle.x=shape.x;
+              circle.y=shape.y;
+            }
+            else if(shape.type==='Star')
+            {
+                    let star = this.stars.find((x) => x.id === id);
+                  star.x=shape.x;
+              star.y=shape.y;
+            }  
+            else if(shape.type==='Line')
+            {
+                 let line = this.lines.find((x) => x.id === id);
+                 line.x=shape.x;
+                 line.y=shape.y;
+            }
+          await fetch('http://localhost:8081/Modify', {
+            method: 'POST',
+            body: (shape.type +" "+String(id) +" " +JSON.stringify(shape)),
+          }).catch(error => {
+            console.error('Fetch error:', error);
+          });
     
   },
     rect(){
@@ -380,6 +434,7 @@ getNewPosition(type, index,e) {    //TODO
     },
   async clr()
     {
+      this.undos++;
       this.circles=[];
       this.lines=[];
       this.squares=[];
@@ -404,6 +459,7 @@ getNewPosition(type, index,e) {    //TODO
       //Fill here 
       if(this.WillChangeColorfill&&shape.type!=='Line')
       {
+        this.undos++;
          shape.fill=this.pureColor;
          if(shape.type==='Rectangle')
          {
@@ -445,6 +501,7 @@ getNewPosition(type, index,e) {    //TODO
        //Stroke here
       else if(this.WillChangeColorEdge)
       {
+              this.undos++;
               shape.stroke=this.pureColor;
               if(shape.type==='Rectangle')
             {
@@ -491,7 +548,8 @@ getNewPosition(type, index,e) {    //TODO
       }
       //Delete Here
       else if(this.WillDelete)
-      {      
+      {    
+           this.undos++;  
               if(shape.type==='Rectangle')
             {
                 this.rectangles=this.rectangles.filter((obj)=>obj.id!==id);
@@ -530,8 +588,8 @@ getNewPosition(type, index,e) {    //TODO
           });
       }
      else if (this.WillCopy) {
+          this.undos++;
           this.shapeid++;
-          console.log("hhhhhhh");
           try {
             const response = await fetch('http://localhost:8081/Copy', {
               method: 'POST',
@@ -539,7 +597,6 @@ getNewPosition(type, index,e) {    //TODO
             });
             
             this.shapes = await response.json();  
-            //console.log(response.json());
           } catch (error) {
             console.error('Error during fetch:', error);
           }
@@ -584,11 +641,12 @@ getNewPosition(type, index,e) {    //TODO
      
     },
       draw() {
-        this.shapeid++;
+       
         this.isdraw = true;
         this.updateTransformer();
      if(this.WillDrawRectangle)
       {
+         this.shapeid++;
       const stage = this.$refs.stage.getStage();
       if (stage) {
         const position = stage.getPointerPosition();
@@ -611,6 +669,7 @@ getNewPosition(type, index,e) {    //TODO
       }
       }
       else if(this.WillDrawCircle){
+         this.shapeid++;
       const stage = this.$refs.stage.getStage();
       if (stage) {
         const position = stage.getPointerPosition();
@@ -633,6 +692,7 @@ getNewPosition(type, index,e) {    //TODO
       }
       else if(this.WillDrawEllipse)
       {
+         this.shapeid++;
           const stage = this.$refs.stage.getStage();
           if (stage) {
             const position = stage.getPointerPosition();
@@ -656,6 +716,7 @@ getNewPosition(type, index,e) {    //TODO
       }
       else if(this.WillDrawStar)
       {
+         this.shapeid++;
           const stage = this.$refs.stage.getStage();
           if (stage) {
             const position = stage.getPointerPosition();
@@ -680,6 +741,7 @@ getNewPosition(type, index,e) {    //TODO
       }
       else if(this.WillDrawLine)
       {
+         this.shapeid++;
           const stage = this.$refs.stage.getStage();
           if (stage) {
             const position = stage.getPointerPosition();
@@ -701,6 +763,7 @@ getNewPosition(type, index,e) {    //TODO
       }
       else if(this.WillDrawSquare)
       {
+         this.shapeid++;
           const stage = this.$refs.stage.getStage();
           if (stage) {
             const position = stage.getPointerPosition();
@@ -724,6 +787,7 @@ getNewPosition(type, index,e) {    //TODO
       }
       else if(this.WillDrawTriangle)
       {
+         this.shapeid++;
           const stage = this.$refs.stage.getStage();
           if (stage) {
             const position = stage.getPointerPosition();
@@ -812,6 +876,7 @@ getNewPosition(type, index,e) {    //TODO
     async createShape(){
       if(this.currentShape!==null)
       {
+            this.undos++;
             await fetch('http://localhost:8081/create', {
             method: 'POST',
             body: (this.shapeType +" "+String(this.shapeid) +" " +JSON.stringify(this.currentShape)),
@@ -822,8 +887,8 @@ getNewPosition(type, index,e) {    //TODO
     
     },
 async undo() {
-  if (this.un !== 0) {
-    await fetch('http://localhost:8080/undo', {
+  if (this.undos !== 0) {
+    await fetch('http://localhost:8081/undo', {
       method: 'GET',
     })
     .then(res => res.json())
@@ -864,18 +929,17 @@ async undo() {
     // Wait for all promises to resolve before proceeding
     await Promise.all(pushPromises);
 
-    this.un--;
-    this.re++;
+    this.undos--;
+    this.redos++;
   }
 },
      async Redo()
     {
      this.updateTransformer()
-      if(this.re!==0)
+      if(this.redos!==0)
       {
         
-
-        await fetch('http://localhost:8080/redo', {
+        await fetch('http://localhost:8081/redo', {
         method: 'GET',
       })
       .then(res => res.json())
@@ -889,7 +953,7 @@ async undo() {
       this.triangles=[];
       this.ellipses=[];
       this.stars=[];
-      this.polygons = [];
+    
       
     for(let i=0;i<this.shapes.length;i++)
       {
@@ -926,6 +990,8 @@ async undo() {
         }
          
       }  
+      this.redos--;
+      this.undos++;
      }
       
     },
@@ -1013,7 +1079,7 @@ async undo() {
         }
         
       console.log(shape);
-
+       this.undos++;
       await fetch('http://localhost:8081/Modify', {
         method: 'POST',
         body: (shape.type +" "+String(this.selectedid) +" " +JSON.stringify(shape)),

@@ -49,6 +49,10 @@ public class ShapesController {
     @PostMapping("/Modify")
     public void ModifyShape(@RequestBody String data) throws JsonProcessingException {
         String[]operators=data.split(" ",3);
+        System.out.println(operators[0]);
+        System.out.println(operators[1]);
+        System.out.println(operators[2]);
+        System.out.println("Modifyyyyy");
         this.shapesService.modifyShape(operators[0],operators[1],operators[2]);
     }
     @GetMapping("/Reset")
