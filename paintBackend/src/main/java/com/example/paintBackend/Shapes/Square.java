@@ -36,7 +36,19 @@ public class Square extends AbstractShape{
     }
 
     @Override
-    public AbstractShape Copy() {
-        return null;
+    public AbstractShape Copy(String id) {
+        Square square=new Square();
+        square.setWidth(this.getWidth());
+        square.setHeight(this.getHeight());
+        square.setFill(this.getFill());
+        square.setX(this.getX()-10);
+        square.setY(this.getY()-10);
+        square.setStroke(this.getStroke());
+        square.setStrokeWidth(this.getStrokeWidth());
+        square.setRotation(this.getRotation());
+        square.setScaleX(this.getScaleX());
+        square.setScaleY(this.getScaleY());
+        square.setId(id);
+        return square;
     }
 }

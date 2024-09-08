@@ -25,7 +25,11 @@ public class undoRedoService {
         return redoStack;
     }
 
-
+    public void resetUndoRedo()
+    {
+        this.undoStack=new Stack<>();
+        this.redoStack=new Stack<>();
+    }
     public void AddToUndoStack(ICommand command) {
 
         undoStack.push(command);

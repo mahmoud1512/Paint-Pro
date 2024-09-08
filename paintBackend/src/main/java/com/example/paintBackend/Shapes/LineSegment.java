@@ -18,7 +18,17 @@ public class LineSegment extends AbstractShape{
     }
 
     @Override
-    public AbstractShape Copy() {
-        return null;
+    public AbstractShape Copy(String id) {
+        LineSegment line=new LineSegment();
+        line.setPoints(this.getPoints());
+        line.setX(this.getX()-10);
+        line.setY(this.getY()-10);
+        line.setStroke(this.getStroke());
+        line.setStrokeWidth(this.getStrokeWidth());
+        line.setRotation(this.getRotation());
+        line.setScaleX(this.getScaleX());
+        line.setScaleY(this.getScaleY());
+        line.setId(id);
+        return line;
     }
 }

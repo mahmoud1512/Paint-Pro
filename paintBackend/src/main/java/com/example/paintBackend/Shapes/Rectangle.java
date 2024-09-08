@@ -2,15 +2,12 @@ package com.example.paintBackend.Shapes;
 
 public class Rectangle extends AbstractShape {
 
-    private  String type;
+    private final String type="Rectangle";
     private double width;
 
     private double height;
     private String fill;
 
-    public void setType(String type) {
-        this.type = type;
-    }
 
     public String getFill() {
         return fill;
@@ -51,7 +48,19 @@ public class Rectangle extends AbstractShape {
     }
 
     @Override
-    public AbstractShape Copy() {
-        return null;
+    public AbstractShape Copy(String id) {
+        Rectangle rectangle=new Rectangle();
+        rectangle.setWidth(this.getWidth());
+        rectangle.setHeight(this.getHeight());
+        rectangle.setFill(this.getFill());
+        rectangle.setX(this.getX()-10);
+        rectangle.setY(this.getY()-10);
+        rectangle.setStroke(this.getStroke());
+        rectangle.setStrokeWidth(this.getStrokeWidth());
+        rectangle.setRotation(this.getRotation());
+        rectangle.setScaleX(this.getScaleX());
+        rectangle.setScaleY(this.getScaleY());
+        rectangle.setId(id);
+        return rectangle;
     }
 }

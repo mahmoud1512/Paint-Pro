@@ -26,7 +26,18 @@ public class Circle extends AbstractShape{
     }
 
     @Override
-    public AbstractShape Copy() {
-        return null;
+    public AbstractShape Copy(String id) {
+        Circle circle=new Circle();
+        circle.setFill(this.fill);
+        circle.setRadius(this.radius);
+        circle.setRotation(this.getRotation());
+        circle.setStrokeWidth(this.getStrokeWidth());
+        circle.setStroke(this.getStroke());
+        circle.setScaleX(this.getScaleX());
+        circle.setScaleY(this.getScaleY());
+        circle.setX(this.getX()-10);
+        circle.setY(this.getY()-10);
+        circle.setId(id);
+        return circle;
     }
 }

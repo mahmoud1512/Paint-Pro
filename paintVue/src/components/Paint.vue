@@ -1,7 +1,7 @@
 <template>
 <div class="container">
 <div class="bord">
-<v-stage :config="configKonva" ref="stage" @dblclick="draw" @click="handleClick"  @mousedown="handleStageMouseDown">
+<v-stage :config="configKonva" ref="stage" @dblclick="draw"  @mousedown="handleStageMouseDown">
 <v-layer>
 <!-- drawing squares   -->
 <!-- we assign index as access key for the object -->
@@ -23,8 +23,8 @@ scaleX:square.scaleX,
 scaleY:square.scaleY
 }"
 @transformend="handleTransformEnd"
-@click="shapeClicked('square', index)"
-@dragend="newpo('square', index, $event)"   
+@click="shapeClicked(square.id)"
+@dragend="getNewPosition('square', index, $event)"   
 >
 
 </v-rect>
@@ -48,8 +48,8 @@ scaleY:rect.scaleY
  
 }"
 @transformend="handleTransformEnd"
-@click="shapeClicked('rect', index) "
-@dragend="newpo('rect', index, $event)"   
+@click="shapeClicked(rect.id) "
+@dragend="getNewPosition('rect', index, $event)"   
 ></v-rect>
 
 <!-- drawing circles -->
@@ -70,8 +70,8 @@ scaleX:circle.scaleX,
 scaleY:circle.scaleY
 }"
 @transformend="handleTransformEnd"
-@click="shapeClicked('circle', index)"
-@dragend="newpo('circle', index, $event)"     >
+@click="shapeClicked(circle.id)"
+@dragend="getNewPosition('circle', index, $event)"     >
 
 </v-circle>
 
@@ -94,8 +94,8 @@ scaleX:ellipse.scaleX,
 scaleY:ellipse.scaleY
 }"
 @transformend="handleTransformEnd"
-@click="shapeClicked('ellipse', index)"
-@dragend="newpo('ellipse', index, $event)"   
+@click="shapeClicked(ellipse.id)"
+@dragend="getNewPosition('ellipse', index, $event)"   
 
 >
 
@@ -121,8 +121,8 @@ scaleX:star.scaleX,
 scaleY:star.scaleY
 }"
 @transformend="handleTransformEnd"
-@click="shapeClicked('star', index)"
-@dragend="newpo('star', index, $event)"   
+@click="shapeClicked(star.id)"
+@dragend="getNewPosition('star', index, $event)"   
 
 >
 
@@ -140,13 +140,13 @@ stroke: line.stroke,
 strokeWidth: line.strokeWidth,
 draggable:true,
 id:line.id,
- rotation:line.rotation,
+rotation:line.rotation,
 scaleX:line.scaleX,
 scaleY:line.scaleY
 }"
 @transformend="handleTransformEnd"
-@click="shapeClicked('line', index)"
-@dragend="newpo('line', index, $event)"   
+@click="shapeClicked(line.id)"
+@dragend="getNewPosition('line', index, $event)"   
 >
 
 </v-line>
@@ -169,8 +169,8 @@ scaleX:triangle.scaleX,
 scaleY:triangle.scaleY
 }"
 @transformend="handleTransformEnd"
-@click="shapeClicked('triangle', index)"
-@dragend="newpo('triangle', index, $event)"   
+@click="shapeClicked(triangle.id)"
+@dragend="getNewPosition('triangle', index, $event)"   
 >
 </v-regular-polygon>
 
@@ -289,6 +289,15 @@ export default  {
          brus:[]
     };
   },
+  async mounted()
+  {
+    await fetch('http://localhost:8081/Reset', {
+        method: 'GET',
+      }).catch(error => {
+        console.error('Fetch error:', error);
+      });
+    
+  },
   
   methods: {
     setup() {
@@ -310,12 +319,7 @@ export default  {
       this.WillChangeColorEdge=false;
       this.WillCopy=false;
     },
-   handleClick() {
-      this.WillCopy=false;
-      this.WillChangeColorfill=false;
-      this.WillChangeColorEdge=false; 
-    },
-newpo(type, index,e) {    //TODO
+getNewPosition(type, index,e) {    //TODO
     
   },
     rect(){
@@ -384,17 +388,199 @@ newpo(type, index,e) {    //TODO
       this.ellipses=[];
       this.shapes=[];
       this.stars =[];
-      this.shapeid=0;
-      await fetch('http://localhost:8080/clear', {
+      await fetch('http://localhost:8081/Clear', {
         method: 'GET',
       }).catch(error => {
         console.error('Fetch error:', error);
       });
-    
+      this.disapleTransformer();
     
     },
   
-    async shapeClicked(type, index) {    //TODO
+    async shapeClicked(id) { 
+            console.log(id);
+            let shape = this.shapes.find((obj) => obj.id === id);
+            console.log(shape);   
+      //Fill here 
+      if(this.WillChangeColorfill&&shape.type!=='Line')
+      {
+         shape.fill=this.pureColor;
+         if(shape.type==='Rectangle')
+         {
+           let rectangle = this.rectangles.find((x) => x.id === id);
+           rectangle.fill=shape.fill;
+         } 
+         else if(shape.type==='Square')
+         {
+            let square = this.squares.find((x) => x.id === id);
+           square.fill=shape.fill;
+         }
+         else if(shape.type==='Triangle')
+         {
+              let triangle = this.triangles.find((x) => x.id === id);
+              triangle.fill=shape.fill;
+         }
+         else if(shape.type==='Ellipse')
+         {
+             let ellipse = this.ellipses.find((x) => x.id === id);
+            ellipse.fill=shape.fill;
+         }
+         else if(shape.type==='Circle')
+         {
+              let circle = this.circles.find((x) => x.id === id);
+           circle.fill=shape.fill;
+         }
+         else if(shape.type==='Star')
+         {
+                let star = this.stars.find((x) => x.id === id);
+               star.fill=shape.fill;
+         }  
+      await fetch('http://localhost:8081/Modify', {
+        method: 'POST',
+        body: (shape.type +" "+String(id) +" " +JSON.stringify(shape)),
+      }).catch(error => {
+        console.error('Fetch error:', error);
+      });
+      }
+       //Stroke here
+      else if(this.WillChangeColorEdge)
+      {
+              shape.stroke=this.pureColor;
+              if(shape.type==='Rectangle')
+            {
+              let rectangle = this.rectangles.find((x) => x.id === id);
+              rectangle.stroke=shape.stroke;
+            } 
+            else if(shape.type==='Square')
+            {
+                let square = this.squares.find((x) => x.id === id);
+              square.stroke=shape.stroke;
+            }
+            else if(shape.type==='Triangle')
+            {
+                  let triangle = this.triangles.find((x) => x.id === id);
+                  triangle.stroke=shape.stroke;
+            }
+            else if(shape.type==='Ellipse')
+            {
+                let ellipse = this.ellipses.find((x) => x.id === id);
+                ellipse.stroke=shape.stroke;
+            }
+            else if(shape.type==='Circle')
+            {
+                  let circle = this.circles.find((x) => x.id === id);
+              circle.stroke=shape.stroke;
+            }
+            else if(shape.type==='Star')
+            {
+                    let star = this.stars.find((x) => x.id === id);
+                  star.stroke=shape.stroke;
+            }  
+            else if(shape.type==='Line')
+            {
+                 let line = this.lines.find((x) => x.id === id);
+                  line.stroke=shape.stroke;
+            }
+          await fetch('http://localhost:8081/Modify', {
+            method: 'POST',
+            body: (shape.type +" "+String(id) +" " +JSON.stringify(shape)),
+          }).catch(error => {
+            console.error('Fetch error:', error);
+          });
+
+      }
+      //Delete Here
+      else if(this.WillDelete)
+      {      
+              if(shape.type==='Rectangle')
+            {
+                this.rectangles=this.rectangles.filter((obj)=>obj.id!==id);
+            } 
+            else if(shape.type==='Square')
+            {
+                 this.squares=this.squares.filter((obj)=>obj.id!==id);
+            }
+            else if(shape.type==='Triangle')
+            {
+                 this.triangles=this.triangles.filter((obj)=>obj.id!==id);
+            }
+            else if(shape.type==='Ellipse')
+            {
+                 this.ellipses=this.ellipses.filter((obj)=>obj.id!==id);
+            }
+            else if(shape.type==='Circle')
+            {
+                 this.circles=this.circles.filter((obj)=>obj.id!==id);
+            }
+            else if(shape.type==='Star')
+            {
+               this.stars=this.stars.filter((obj)=>obj.id!==id);
+            }  
+            else if(shape.type==='Line')
+            {
+                 this.lines=this.lines.filter((obj)=>obj.id!==id);
+            }
+             this.shapes=this.shapes.filter((obj)=>obj.id!==id);
+             this.disapleTransformer();
+          await fetch('http://localhost:8081/Delete', {
+            method: 'POST',
+            body: (String(id)),
+          }).catch(error => {
+            console.error('Fetch error:', error);
+          });
+      }
+     else if (this.WillCopy) {
+          this.shapeid++;
+          console.log("hhhhhhh");
+          try {
+            const response = await fetch('http://localhost:8081/Copy', {
+              method: 'POST',
+              body:(String(id) + " " + String(this.shapeid)),
+            });
+            
+            this.shapes = await response.json();  
+            //console.log(response.json());
+          } catch (error) {
+            console.error('Error during fetch:', error);
+          }
+          
+          this.circles = [];
+          this.lines = [];
+          this.squares = [];
+          this.rectangles = [];
+          this.triangles = [];
+          this.ellipses = [];
+          this.stars = [];
+          
+          this.shapes.forEach(shape => {
+            switch (shape.type) {
+              case 'Circle':
+                this.circles.push({ ...shape });
+                break;
+              case 'Rectangle':
+                this.rectangles.push({ ...shape });
+                break;
+              case 'Star':
+                this.stars.push({ ...shape });
+                break;
+              case 'Square':
+                this.squares.push({ ...shape });
+                break;
+              case 'Triangle':
+                this.triangles.push({ ...shape });
+                break;
+              case 'Line':
+                this.lines.push({ ...shape });
+                break;
+              case 'Ellipse':
+                this.ellipses.push({ ...shape });
+                break;
+            }
+          });
+          this.WillCopy=false;
+      }
+
+
      
     },
       draw() {
@@ -624,41 +810,16 @@ newpo(type, index,e) {    //TODO
       }
     },
     async createShape(){
-      await fetch('http://localhost:8081/create', {
-        method: 'POST',
-        body: (this.shapeType +" "+String(this.shapeid) +" " +JSON.stringify(this.currentShape)),
-      }).catch(error => {
-        console.error('Fetch error:', error);
-      });
-    },
-
-    async modify()
-    {
-        await fetch('http://localhost:8080/modify', {
-        method: 'POST',
-        body: (this.ord + "{" + this.shapeType + JSON.stringify(this.modifysh)),
-      }).catch(error => {
-        console.error('Fetch error:', error);
-      });
-    },
-    async prototype()
-    {
-      await fetch('http://localhost:8080/copy', {
-        method: 'POST',
-        body: (this.ord),
-      })
-      .then(res => res.json())
-      .then(data => this.co = data)
-      console.log(this.co)
-    },
-    async modify2()
-    {
-        await fetch('http://localhost:8080/delete', {
-        method: 'POST',
-        body: (this.ord + "," + this.shapeType),
-      }).catch(error => {
-        console.error('Fetch error:', error);
-      });
+      if(this.currentShape!==null)
+      {
+            await fetch('http://localhost:8081/create', {
+            method: 'POST',
+            body: (this.shapeType +" "+String(this.shapeid) +" " +JSON.stringify(this.currentShape)),
+          }).catch(error => {
+            console.error('Fetch error:', error);
+          });
+      }
+    
     },
 async undo() {
   if (this.un !== 0) {
@@ -677,7 +838,6 @@ async undo() {
     this.triangles = [];
     this.ellipses = [];
     this.stars = [];
-    this.polygons = [];
 
     // Create an array of promises to wait for each push operation to complete
     const pushPromises = this.shapes.map(shape => {
@@ -769,7 +929,7 @@ async undo() {
      }
       
     },
-     handleTransformEnd(e) {
+    async handleTransformEnd(e) {
       let shape;
       for(let i = 0; i < this.shapes.length; i++){
         if(this.shapes[i] !== null && this.shapes[i].id === this.selectedid)
@@ -853,8 +1013,13 @@ async undo() {
         }
         
       console.log(shape);
-      this.modify();
-      
+
+      await fetch('http://localhost:8081/Modify', {
+        method: 'POST',
+        body: (shape.type +" "+String(this.selectedid) +" " +JSON.stringify(shape)),
+      }).catch(error => {
+        console.error('Fetch error:', error);
+      });
 
 
     },
@@ -910,6 +1075,11 @@ async undo() {
       }
     },
 
+   disapleTransformer()
+   {
+      const transform=this.$refs.transformer.getNode();
+      transform.nodes([]);
+   }
 
   }
 }

@@ -2,12 +2,14 @@ package com.example.paintBackend.undoRedo;
 
 import com.example.paintBackend.Shapes.AbstractShape;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:8080")
 public class undoRedoController {
     private undoRedoService undoRedo;
     @Autowired

@@ -48,7 +48,20 @@ public class Star extends AbstractShape{
     }
 
     @Override
-    public AbstractShape Copy() {
-        return null;
+    public AbstractShape Copy(String id) {
+        Star star=new Star();
+        star.setFill(this.getFill());
+        star.setNumPoints(this.getNumPoints());
+        star.setInnerRadius(this.getInnerRadius());
+        star.setOuterRadius(this.getOuterRadius());
+        star.setX(this.getX()-10);
+        star.setY(this.getY()-10);
+        star.setStroke(this.getStroke());
+        star.setStrokeWidth(this.getStrokeWidth());
+        star.setRotation(this.getRotation());
+        star.setScaleX(this.getScaleX());
+        star.setScaleY(this.getScaleY());
+        star.setId(id);
+        return star;
     }
 }

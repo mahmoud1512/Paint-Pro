@@ -30,7 +30,18 @@ public class Triangle extends AbstractShape{
     }
 
     @Override
-    public AbstractShape Copy() {
-        return null;
+    public AbstractShape Copy(String id) {
+        Triangle triangle=new Triangle();
+        triangle.setRadius(this.getRadius());
+        triangle.setFill(this.getFill());
+        triangle.setX(this.getX()-10);
+        triangle.setY(this.getY()-10);
+        triangle.setStroke(this.getStroke());
+        triangle.setStrokeWidth(this.getStrokeWidth());
+        triangle.setRotation(this.getRotation());
+        triangle.setScaleX(this.getScaleX());
+        triangle.setScaleY(this.getScaleY());
+        triangle.setId(id);
+        return triangle;
     }
 }

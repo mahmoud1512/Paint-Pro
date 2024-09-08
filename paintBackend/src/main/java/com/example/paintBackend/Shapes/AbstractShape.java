@@ -75,5 +75,5 @@ public abstract class AbstractShape {
     public void setScaleY(double scaleY) {
         this.scaleY = scaleY;
     }
-    public abstract AbstractShape Copy();
+    public abstract AbstractShape Copy(String id);
 }
