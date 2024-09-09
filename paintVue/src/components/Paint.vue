@@ -275,18 +275,21 @@ export default  {
       WillChangeColorfill:false,
       WillChangeColorEdge:false,
       WillCopy:false,
+
+      Cleared:false,    // not to send clear request multiple times
       currentShape:null,
       shapes:[],
+      
       selectedshapeid: '',  //transform
-        shapeType: '',
-        ord:null,
-        modifysh:null, 
-        co:null,
-        length:200,
-        undos:0,
-        redos:0,
-        shapeid:0,
-         brus:[]
+      shapeType: '',
+      ord:null,
+      modifysh:null, 
+      co:null,
+      length:200,
+      undos:0,
+      redos:0,
+      shapeid:0,
+      brus:[]
     };
   },
   async mounted()
@@ -434,6 +437,7 @@ async getNewPosition(id,e) {
     },
   async clr()
     {
+      if(!this.Cleared){
       this.undos++;
       this.circles=[];
       this.lines=[];
@@ -448,7 +452,9 @@ async getNewPosition(id,e) {
       }).catch(error => {
         console.error('Fetch error:', error);
       });
+      this.Cleared=true;
       this.disapleTransformer();
+      }
     
     },
   
@@ -497,6 +503,7 @@ async getNewPosition(id,e) {
       }).catch(error => {
         console.error('Fetch error:', error);
       });
+       this.WillChangeColorfill=false;
       }
        //Stroke here
       else if(this.WillChangeColorEdge)
@@ -544,7 +551,7 @@ async getNewPosition(id,e) {
           }).catch(error => {
             console.error('Fetch error:', error);
           });
-
+          this.WillChangeColorEdge=false;
       }
       //Delete Here
       else if(this.WillDelete)
@@ -586,6 +593,7 @@ async getNewPosition(id,e) {
           }).catch(error => {
             console.error('Fetch error:', error);
           });
+          this.WillDelete=false;
       }
      else if (this.WillCopy) {
           this.undos++;
@@ -877,6 +885,7 @@ async getNewPosition(id,e) {
       if(this.currentShape!==null)
       {
             this.undos++;
+            this.Cleared=false;
             await fetch('http://localhost:8081/create', {
             method: 'POST',
             body: (this.shapeType +" "+String(this.shapeid) +" " +JSON.stringify(this.currentShape)),
@@ -924,7 +933,7 @@ async undo() {
     } 
   }
 });
-
+     this.disapleTransformer();
 
     // Wait for all promises to resolve before proceeding
     await Promise.all(pushPromises);
@@ -990,6 +999,7 @@ async undo() {
         }
          
       }  
+      this.disapleTransformer();
       this.redos--;
       this.undos++;
      }
