@@ -1,7 +1,7 @@
 <template>
 <div class="container">
 <div class="bord">
-<v-stage :config="configKonva" ref="stage" @dblclick="draw"  @mousedown="handleStageMouseDown">
+<v-stage :config="configKonva" ref="stage" @dblclick="draw" @mousemove="handleBrushMove" @mouseup="stopBrush"  @mousedown="handleStageMouseDown">
 <v-layer>
 <!-- drawing squares   -->
 <!-- we assign index as access key for the object -->
@@ -65,7 +65,7 @@ stroke:circle.stroke,
 strokeWidth: circle.strokeWidth,
 draggable:true,
 id:circle.id,
- rotation:circle.rotation,
+rotation:circle.rotation,
 scaleX:circle.scaleX,
 scaleY:circle.scaleY
 }"
@@ -174,6 +174,13 @@ scaleY:triangle.scaleY
 >
 </v-regular-polygon>
 
+<v-image :config="{
+            image: image,
+            x:this.fullWidth/4,
+            y:this.fullHeight/4,
+            width:this.fullWidth/2,
+            height:this.fullHeight/2
+          }"/>
 
 <v-transformer ref="transformer" />
 </v-layer>
@@ -181,18 +188,12 @@ scaleY:triangle.scaleY
 </div>
 
 <div class="left-bar">
+<div style="margin-bottom:5px; display:flex; flex-direction:column"> 
 <button title="Open" @click="laod()" class="custom-btn"><i class="fa-solid fa-folder-open"></i></button>
 <button title="Save" @click="save()" class="custom-btn"><i class="fa-solid fa-floppy-disk"></i></button>
 <hr>
-<div class="palette">
-  <color-picker v-model:gradientColor="gradientColor" v-model:pureColor="pureColor" class="color-picker" />
 </div>
-<button title="Fill" @click="fill()" class="custom-btn"><i class="fa-solid fa-fill-drip"></i></button>
-<button title="Border" @click="edge()" class="custom-btn"><i class="fa-solid fa-paintbrush"></i></button>
-<button title="Copy" @click="copy()" class="custom-btn"><i class="fa-solid fa-copy"></i></button>
-<button title="Undo" @click="undo()" class="custom-btn"><i class="fa-solid fa-arrow-rotate-left"></i></button>
-<button title="Redo" @click="Redo()" class="custom-btn"><i class="fa-solid fa-rotate-right"></i></button>
-<hr>
+
 <button title="Square" @click="square()" class="custom-btn">
 <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
   <rect width="18" height="18" x="3" y="3"></rect> <!-- Square -->
@@ -228,11 +229,30 @@ scaleY:triangle.scaleY
   <line x1="2" y1="12" x2="22" y2="12"></line> <!-- Line -->
 </svg>
 </button>
-<hr>
 
+
+
+</div>
+<div class="right-bar">
+
+<div class="palette">
+  <color-picker v-model:gradientColor="gradientColor" v-model:pureColor="pureColor" class="color-picker" />
+</div>
+<button title="Fill" @click="fill()" class="custom-btn"><i class="fa-solid fa-fill-drip"></i></button>
+<hr style="margin-bottom:10px;">
+<div class="palette">
+  <color-picker v-model:gradientColor="gradientColor" v-model:pureColor="pureColor2" class="color-picker" />
+</div>
+<button title="Border" @click="edge()" class="custom-btn"><i class="fas fa-border-style"></i>
+</button>
+<hr style="margin-bottom:10px;">
+<button title="Copy" @click="copy()" class="custom-btn"><i class="fa-solid fa-copy"></i></button>
+<button title="Undo" @click="undo()" class="custom-btn"><i class="fa-solid fa-arrow-rotate-left"></i></button>
+<button title="Redo" @click="Redo()" class="custom-btn"><i class="fa-solid fa-rotate-right"></i></button>
+<hr>
 <button title="Delete" @click="del()" class="custom-btn"><i class="fa-solid fa-eraser"></i></button>
 <button title="Clear" @click="clr()" class="custom-btn"><i class="fa-solid fa-trash"></i></button>
-
+<button title="Create AI images" @click="createImage()" class="custom-btn"><i class='fas fa-robot'></i></button>
 </div>
 </div>
 </template>
@@ -503,13 +523,12 @@ async getNewPosition(id,e) {
       }).catch(error => {
         console.error('Fetch error:', error);
       });
-       this.WillChangeColorfill=false;
       }
        //Stroke here
       else if(this.WillChangeColorEdge)
       {
               this.undos++;
-              shape.stroke=this.pureColor;
+              shape.stroke=this.pureColor2;
               if(shape.type==='Rectangle')
             {
               let rectangle = this.rectangles.find((x) => x.id === id);
@@ -551,7 +570,6 @@ async getNewPosition(id,e) {
           }).catch(error => {
             console.error('Fetch error:', error);
           });
-          this.WillChangeColorEdge=false;
       }
       //Delete Here
       else if(this.WillDelete)
@@ -593,7 +611,6 @@ async getNewPosition(id,e) {
           }).catch(error => {
             console.error('Fetch error:', error);
           });
-          this.WillDelete=false;
       }
      else if (this.WillCopy) {
           this.undos++;
@@ -642,7 +659,6 @@ async getNewPosition(id,e) {
                 break;
             }
           });
-          this.WillCopy=false;
       }
 
 
@@ -1190,6 +1206,19 @@ async undo() {
   position: absolute;
   top: 50%;
   left: 0;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  background-color: #1f2e2e;
+  margin-left: 20px;
+  padding: 30px 10px;
+  border-radius: 30px;
+}
+.right-bar{
+  position: absolute;
+  top: 50%;
+  right: 0;
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
