@@ -1,13 +1,13 @@
 package com.example.paintBackend.Shapes;
 
-
+//For polymorphic deserialization
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME, // Include type info as the name of the class
-        include = JsonTypeInfo.As.PROPERTY, // Include it as a property in the JSON
-        property = "type" // This is the property that will hold the type info
+        use = JsonTypeInfo.Id.NAME, //how to define name of class
+        include = JsonTypeInfo.As.PROPERTY, // go to the properties
+        property = "type" // use type property
 )
 
 @JsonSubTypes({
