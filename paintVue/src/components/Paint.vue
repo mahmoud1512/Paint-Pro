@@ -1,5 +1,45 @@
 <template>
 <div class="container">
+     <v-dialog width="400" class="saving" v-model="savdialog" transition="dialog-top-transition">
+<v-card variant="outlined">
+<v-card-title><h1>save</h1></v-card-title>
+<v-btn :style="{ backgroundColor: savjason === true ? '#b300b3' : 'initial', color: savjason === true ? '#FFFFFF' : 'initial' }" @click="savejason()">json</v-btn>
+<div style="height:5px;"></div>
+<v-btn :style="{ backgroundColor: savxml === true ? '#b300b3' : 'initial', color: savxml === true ? '#FFFFFF' : 'initial' }" @click="savexml()">xml</v-btn>
+<v-card-actions >
+  <v-btn  variant="outlined" @click="submity() ">OK</v-btn>
+</v-card-actions>
+</v-card>
+</v-dialog>
+<v-dialog width="400" class="saving" v-model="pathdialog" transition="dialog-bottom-transition">
+<v-card variant="outlined">
+<v-card-title>path of saving</v-card-title>
+<input type="text" placeholder="c:\\path" id="path" autofocus>
+<v-card-actions >
+  <v-btn  variant="outlined" @click="send()">save</v-btn>
+</v-card-actions>
+</v-card>
+</v-dialog>
+<v-dialog width="400" class="saving" v-model="loaddialog" transition="dialog-top-transition">
+<v-card variant="outlined">
+<v-card-title><h1>Open</h1></v-card-title>
+<v-btn :style="{ backgroundColor: lodjason === true ? '#b300b3' : 'initial', color: lodjason === true ? '#FFFFFF' : 'initial' }" @click="loadjason()">json</v-btn>
+<div style="height:5px;"></div>
+<v-btn :style="{ backgroundColor: lodxml === true ? '#b300b3' : 'initial', color: lodxml === true ? '#FFFFFF' : 'initial' }" @click="loadxml()">xml</v-btn>
+<v-card-actions >
+  <v-btn  variant="outlined" @click="ok() ">OK</v-btn>
+</v-card-actions>
+</v-card>
+</v-dialog>
+<v-dialog width="400" class="saving" v-model="pathloaddialog" transition="dialog-bottom-transition">
+<v-card variant="outlined">
+<v-card-title>path of file</v-card-title>
+<input type="text" placeholder="c:\\path" id="pathload" autofocus>
+<v-card-actions >
+  <v-btn  variant="outlined" @click="open()">open</v-btn>
+</v-card-actions>
+</v-card>
+</v-dialog> 
 <div class="bord">
 <v-stage :config="configKonva" ref="stage" @dblclick="draw" @mousemove="handleBrushMove" @mouseup="stopBrush"  @mousedown="handleStageMouseDown">
 <v-layer>
@@ -309,7 +349,16 @@ export default  {
       undos:0,
       redos:0,
       shapeid:0,
-      brus:[]
+      
+      savdialog:false,
+      savjason:false,
+      savxml:false,
+      pathdialog:false,
+      loaddialog:false,
+      pathloaddialog:false,
+      lodjason:false,
+      lodxml:false,
+      poldialog:false,
     };
   },
   async mounted()
@@ -953,6 +1002,8 @@ async undo() {
 
     // Wait for all promises to resolve before proceeding
     await Promise.all(pushPromises);
+     if(this.shapes.length!==0)
+           this.Cleared=false;
 
     this.undos--;
     this.redos++;
@@ -1015,12 +1066,257 @@ async undo() {
         }
          
       }  
+      if(this.shapes.length!==0)
+           this.Cleared=false;
       this.disapleTransformer();
       this.redos--;
       this.undos++;
      }
       
     },
+
+     async saving()
+      {
+        console.log(this.savejason)
+        if(this.savjason){
+        await fetch('http://localhost:8081/saveJson', {
+          method: 'POST',
+          body: this.path+".json",
+        }).catch(error => {
+          console.error('Fetch error:', error);
+        });
+      }
+      if(this.savxml){
+        await fetch('http://localhost:8081/saveXml', {
+          method: 'POST',
+          body: this.path + ".xml",
+        }).catch(error => {
+          console.error('Fetch error:', error);
+        });
+        console.log(this.savexml)
+      }
+      },
+
+     async loading(){
+      this.undos = 0
+      this.redos = 0 
+        if(this.lodjason){
+        await fetch('http://localhost:8081/loadJson', {
+          method: 'POST',
+          body: (this.path + ".json"),
+        })
+        .then(res => res.json())
+        .then(data => this.shapes = data)
+        console.log(this.shapes)
+        
+      this.circles=[];
+      this.lines=[];
+      this.squares=[];
+      this.rectangles=[];
+      this.triangles=[];
+      this.ellipses=[];
+      this.stars=[];
+      let max=-1;
+   
+      for(let i=0;i<this.shapes.length;i++)
+      {
+        max=Math.max(max,this.shapes[i].id);
+        if(this.shapes[i]!==null)
+        {
+               if(this.shapes[i].type==='Rectangle')
+          {
+             this.rectangles.push({...this.shapes[i]});
+          }
+          else if(this.shapes[i].type==='Circle')
+          {
+              this.circles.push({...this.shapes[i]});
+          }
+          else if(this.shapes[i].type==='Ellipse')
+          {
+            this.ellipses.push({...this.shapes[i]})
+          }
+          else if(this.shapes[i].type==='Star')
+          {
+            this.stars.push({...this.shapes[i]})
+          }
+         else  if(this.shapes[i].type==='Square')
+          {
+             this.squares.push({...this.shapes[i]});
+          }
+          else if(this.shapes[i].type==='Triangle')
+          {
+            this.triangles.push({...this.shapes[i]});
+          }
+         else if(this.shapes[i].type==='Line')
+         {
+             this.lines.push({...this.shapes[i]});
+         }
+        }
+        
+         
+      }
+          if(this.shapes.length!==0)
+          {
+              this.shapeid=max;
+              this.Cleared=false;
+          }
+          else
+          { 
+              this.shapeid=0;  
+          }
+         
+      }
+      if(this.lodxml){
+        this.undos = 0
+        this.redos = 0
+        await fetch('http://localhost:8081/loadXml', {
+          method: 'POST',
+          body: this.path+".xml",
+        })
+        .then(res => res.json())
+        .then(data => this.shapes = data)
+        console.log(this.shapes)
+           
+      this.circles=[];
+      this.lines=[];
+      this.squares=[];
+      this.rectangles=[];
+      this.triangles=[];
+      this.ellipses=[];
+      this.stars=[];
+
+       let max=-1;
+      
+        for(let i=0;i<this.shapes.length;i++)
+      {
+        max=Math.max(max,this.shapes[i].id);
+        if(this.shapes[i]!==null)
+        {
+               if(this.shapes[i].type==='Rectangle')
+          {
+             this.rectangles.push({...this.shapes[i]});
+          }
+          else if(this.shapes[i].type==='Circle')
+          {
+              this.circles.push({...this.shapes[i]});
+          }
+          else if(this.shapes[i].type==='Ellipse')
+          {
+            this.ellipses.push({...this.shapes[i]})
+          }
+          else if(this.shapes[i].type==='Star')
+          {
+            this.stars.push({...this.shapes[i]})
+          }
+         else  if(this.shapes[i].type==='Square')
+          {
+             this.squares.push({...this.shapes[i]});
+          }
+          else if(this.shapes[i].type==='Triangle')
+          {
+            this.triangles.push({...this.shapes[i]});
+          }
+         else if(this.shapes[i].type==='Line')
+         {
+             this.lines.push({...this.shapes[i]});
+         }
+        
+        }
+         
+      }
+        if(this.shapes.length!==0)
+          {
+              this.shapeid=max;
+              this.Cleared=false;
+          }
+          else
+          { 
+              this.shapeid=0;  
+          }
+    }
+
+     },
+        savejason(){
+      this.savjason=true;
+      this.savxml=false;
+    },
+    savexml(){
+      this.savxml=true;
+      this.savjason=false;
+    }, 
+      submity(){
+        this.savdialog=false;
+        this.pathdialog=true;
+      } , 
+      ok(){
+        this.loaddialog=false;
+        this.pathloaddialog=true;
+
+      },
+      save()
+      {
+          this.saving();
+          this.savdialog=true;
+      },  
+      send(){
+        var str=document.getElementById('path').value;
+        console.log(str);
+        for(let i=0 ;i<str.length;i++)
+        {
+          if(str[i]=='\\')
+          {
+
+            this.path+='\\'
+
+          }
+          this.path+=str[i];
+        }
+        console.log(this.savjason)
+        console.log(this.savxml)
+        console.log(this.path)
+        this.pathdialog=false;
+        this.saving();
+        this.savjason=false;
+        this.savxml=false;
+        this.path = ""
+      },
+      laod(){
+        this.loaddialog=true;
+      },
+      loadjason(){
+        this.lodjason=true;
+        this.lodxml=false;
+
+      },
+      loadxml(){
+        this.lodxml=true;
+        this.lodjason=false;
+      },
+      open()
+      {
+        var str=document.getElementById('pathload').value;
+        for(let i=0 ;i<str.length;i++)
+        {
+          if(str[i]=='\\')
+          {
+
+            this.path+='\\'
+
+          }
+          this.path+=str[i];
+        }
+        console.log(this.lodjason)
+        console.log(this.lodxml)
+        console.log(this.path)
+        this.pathloaddialog=false;
+        this.loading();
+        this.lodjason=false;
+        this.lodxml=false;
+        this.path = ""
+
+      },
+
+
     async handleTransformEnd(e) {
       let shape;
       for(let i = 0; i < this.shapes.length; i++){

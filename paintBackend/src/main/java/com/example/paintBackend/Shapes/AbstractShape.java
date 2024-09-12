@@ -1,5 +1,25 @@
 package com.example.paintBackend.Shapes;
 
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME, // Include type info as the name of the class
+        include = JsonTypeInfo.As.PROPERTY, // Include it as a property in the JSON
+        property = "type" // This is the property that will hold the type info
+)
+
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Square.class, name = "Square"),
+        @JsonSubTypes.Type(value = Circle.class, name = "Circle"),
+        @JsonSubTypes.Type(value = Rectangle.class, name = "Rectangle"),
+        @JsonSubTypes.Type(value = Triangle.class, name = "Triangle"),
+        @JsonSubTypes.Type(value = Ellipse.class, name = "Ellipse"),
+        @JsonSubTypes.Type(value = Star.class, name = "Star"),
+        @JsonSubTypes.Type(value = LineSegment.class, name = "Line")
+})
+
 public abstract class AbstractShape {
     private double x;
     private double y;

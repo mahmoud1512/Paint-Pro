@@ -1,11 +1,15 @@
 package com.example.paintBackend.Shapes;
 
+import com.example.paintBackend.SaveLoad.LoadJSON;
+import com.example.paintBackend.SaveLoad.SaveJSON;
 import com.example.paintBackend.undoRedo.*;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +24,10 @@ public class ShapesService {
     @Lazy
     private undoRedoService undoRedoService;
 
+    @Autowired
+    private SaveJSON saveJSON;
+    @Autowired
+    private LoadJSON loadJSON;
 
     public void initialize() {
         this.IdShapeMapper=new HashMap<>();
@@ -47,8 +55,8 @@ public class ShapesService {
         this.undoRedoService.AddToUndoStack(deleteCommand);
         deleteCommand.execute();
     }
-    public void clear()
-    {
+    public void clear() {
+
         ClearCommand clearCommand=new ClearCommand(IdShapeMapper);
         this.undoRedoService.AddToUndoStack(clearCommand);
         clearCommand.execute();
@@ -64,5 +72,12 @@ public class ShapesService {
 
     public List<AbstractShape> getShapes() {
         return new ArrayList<>(this.IdShapeMapper.values());
+    }
+
+    public void saveToJsonFile(String path) throws IOException {
+        this.saveJSON.writeToFile(path, IdShapeMapper);
+    }
+    public void loadFromJsonFile(String path) throws IOException {
+        this.IdShapeMapper=loadJSON.ReadData(path);
     }
 }

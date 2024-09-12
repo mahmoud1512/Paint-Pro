@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -35,8 +36,7 @@ public class ShapesController {
     }
 
     @GetMapping("/Clear")
-    public void Clear()
-    {
+    public void Clear()  {
         this.shapesService.clear();
         System.out.println("Cleared");
     }
@@ -60,5 +60,14 @@ public class ShapesController {
     {
         this.shapesService.reset();
         System.out.println("make a reset");
+    }
+    @PostMapping("/saveJson")
+    public void saveToJsonFile(@RequestBody String path) throws IOException {
+        shapesService.saveToJsonFile(path);
+    }
+    @PostMapping("/loadJson")
+    public List<AbstractShape> loadFromJsonFile(@RequestBody String path) throws IOException {
+        shapesService.loadFromJsonFile(path);
+        return shapesService.getShapes();
     }
 }
