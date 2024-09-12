@@ -1,7 +1,9 @@
 package com.example.paintBackend.Shapes;
 
 import com.example.paintBackend.SaveLoad.LoadJSON;
+import com.example.paintBackend.SaveLoad.LoadXML;
 import com.example.paintBackend.SaveLoad.SaveJSON;
+import com.example.paintBackend.SaveLoad.SaveXML;
 import com.example.paintBackend.undoRedo.*;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -28,6 +30,11 @@ public class ShapesService {
     private SaveJSON saveJSON;
     @Autowired
     private LoadJSON loadJSON;
+
+    @Autowired
+    private SaveXML saveXML;
+    @Autowired
+    private LoadXML loadXML;
 
     public void initialize() {
         this.IdShapeMapper=new HashMap<>();
@@ -79,5 +86,11 @@ public class ShapesService {
     }
     public void loadFromJsonFile(String path) throws IOException {
         this.IdShapeMapper=loadJSON.ReadData(path);
+    }
+    public void saveToXmlFile(String path) throws IOException {
+        this.saveXML.writeToXML(path,IdShapeMapper);
+    }
+    public void loadFromXmlFile(String path) throws IOException {
+        this.IdShapeMapper=loadXML.loadFromXML(path);
     }
 }

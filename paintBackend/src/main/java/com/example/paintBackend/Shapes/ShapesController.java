@@ -70,4 +70,14 @@ public class ShapesController {
         shapesService.loadFromJsonFile(path);
         return shapesService.getShapes();
     }
+    @PostMapping("/saveXml")
+    public void saveToXmlFile(@RequestBody String path) throws IOException {
+        shapesService.saveToXmlFile(path);
+    }
+    @PostMapping("/loadXml")
+    public List<AbstractShape> loadFromXmlFile(@RequestBody String path) throws IOException {
+        shapesService.loadFromXmlFile(path);
+        return shapesService.getShapes();
+    }
+
 }

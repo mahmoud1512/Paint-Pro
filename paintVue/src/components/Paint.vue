@@ -667,7 +667,7 @@ async getNewPosition(id,e) {
           try {
             const response = await fetch('http://localhost:8081/Copy', {
               method: 'POST',
-              body:(String(id) + " " + String(this.shapeid)),
+              body:(String(id) + " " + "shape"+String(this.shapeid)),
             });
             
             this.shapes = await response.json();  
@@ -733,7 +733,7 @@ async getNewPosition(id,e) {
             strokeWidth:2,
             width: 100,
             height: 150,
-              id:String(this.shapeid),
+              id:"shape"+String(this.shapeid),
                 rotation : 0,
                   scaleX : 1,
                  scaleY : 1
@@ -755,7 +755,7 @@ async getNewPosition(id,e) {
             stroke:this.pureColor2,
             strokeWidth:2,
             radius: 50,
-            id:String(this.shapeid),
+            id:"shape"+String(this.shapeid),
             rotation : 0,
             scaleX : 1,
             scaleY : 1
@@ -779,7 +779,7 @@ async getNewPosition(id,e) {
                  strokeWidth:2,
                  radiusX: 100,
                  radiusY:65,
-                id:String(this.shapeid),
+                 id:"shape"+String(this.shapeid),
                   rotation : 0,
                      scaleX : 1,
                      scaleY : 1
@@ -804,7 +804,7 @@ async getNewPosition(id,e) {
               innerRadius:65,
               outerRadius:100,
               numPoints:6,
-                id:String(this.shapeid),
+                 id:"shape"+String(this.shapeid),
                   rotation : 0,
                      scaleX : 1,
                      scaleY : 1
@@ -826,7 +826,7 @@ async getNewPosition(id,e) {
                 stroke:this.pureColor2,
                 strokeWidth:7,
                 points: [0, 0,200,80],
-                 id:String(this.shapeid),
+                 id:"shape"+String(this.shapeid),
                    rotation : 0,
                      scaleX : 1,
                      scaleY : 1
@@ -850,7 +850,7 @@ async getNewPosition(id,e) {
             stroke:this.pureColor2,
             width: 100,
             height: 100,
-              id:String(this.shapeid),
+               id:"shape"+String(this.shapeid),
                 rotation : 0,
                      scaleX : 1,
                      scaleY : 1
@@ -873,7 +873,7 @@ async getNewPosition(id,e) {
                 fill:this.pureColor,
                 stroke:this.pureColor2,
                 radius:75,
-                id:String(this.shapeid),
+                 id:"shape"+String(this.shapeid),
                 rotation : 0,
                 scaleX : 1,
                 scaleY : 1
@@ -953,7 +953,7 @@ async getNewPosition(id,e) {
             this.Cleared=false;
             await fetch('http://localhost:8081/create', {
             method: 'POST',
-            body: (this.shapeType +" "+String(this.shapeid) +" " +JSON.stringify(this.currentShape)),
+            body: (this.shapeType +" "+"shape"+String(this.shapeid) +" " +JSON.stringify(this.currentShape)),
           }).catch(error => {
             console.error('Fetch error:', error);
           });
@@ -1120,7 +1120,7 @@ async undo() {
    
       for(let i=0;i<this.shapes.length;i++)
       {
-        max=Math.max(max,this.shapes[i].id);
+        max=Math.max(max,this.shapes[i].id.substr(5));
         if(this.shapes[i]!==null)
         {
                if(this.shapes[i].type==='Rectangle')
@@ -1189,7 +1189,7 @@ async undo() {
       
         for(let i=0;i<this.shapes.length;i++)
       {
-        max=Math.max(max,this.shapes[i].id);
+        max=Math.max(max,this.shapes[i].id.substr(5));
         if(this.shapes[i]!==null)
         {
                if(this.shapes[i].type==='Rectangle')
