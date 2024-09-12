@@ -1,6 +1,6 @@
 <template>
 <div class="container">
-     <v-dialog width="400" class="saving" v-model="savdialog" transition="dialog-top-transition">
+     <v-dialog style="z-index:5" width="400" class="saving" v-model="savdialog" transition="dialog-top-transition">
 <v-card variant="outlined">
 <v-card-title><h1>save</h1></v-card-title>
 <v-btn :style="{ backgroundColor: savjason === true ? '#b300b3' : 'initial', color: savjason === true ? '#FFFFFF' : 'initial' }" @click="savejason()">json</v-btn>
@@ -11,7 +11,7 @@
 </v-card-actions>
 </v-card>
 </v-dialog>
-<v-dialog width="400" class="saving" v-model="pathdialog" transition="dialog-bottom-transition">
+<v-dialog style="z-index:5"  width="400" class="saving" v-model="pathdialog" transition="dialog-bottom-transition">
 <v-card variant="outlined">
 <v-card-title>path of saving</v-card-title>
 <input type="text" placeholder="c:\\path" id="path" autofocus>
@@ -20,7 +20,7 @@
 </v-card-actions>
 </v-card>
 </v-dialog>
-<v-dialog width="400" class="saving" v-model="loaddialog" transition="dialog-top-transition">
+<v-dialog style="z-index:5" width="400" class="saving" v-model="loaddialog" transition="dialog-top-transition">
 <v-card variant="outlined">
 <v-card-title><h1>Open</h1></v-card-title>
 <v-btn :style="{ backgroundColor: lodjason === true ? '#b300b3' : 'initial', color: lodjason === true ? '#FFFFFF' : 'initial' }" @click="loadjason()">json</v-btn>
@@ -31,7 +31,7 @@
 </v-card-actions>
 </v-card>
 </v-dialog>
-<v-dialog width="400" class="saving" v-model="pathloaddialog" transition="dialog-bottom-transition">
+<v-dialog style="z-index:5" width="400" class="saving" v-model="pathloaddialog" transition="dialog-bottom-transition">
 <v-card variant="outlined">
 <v-card-title>path of file</v-card-title>
 <input type="text" placeholder="c:\\path" id="pathload" autofocus>
@@ -41,7 +41,7 @@
 </v-card>
 </v-dialog> 
 <div class="bord">
-<v-stage :config="configKonva" ref="stage" @dblclick="draw" @mousemove="handleBrushMove" @mouseup="stopBrush"  @mousedown="handleStageMouseDown">
+<v-stage class="canvas-overlay" :config="configKonva" ref="stage" @dblclick="draw" @mousemove="handleBrushMove" @mouseup="stopBrush"  @mousedown="handleStageMouseDown">
 <v-layer>
 <!-- drawing squares   -->
 <!-- we assign index as access key for the object -->
@@ -1543,6 +1543,15 @@ async undo() {
 
 hr{
   width: 100%;
+}
+.canvas-overlay
+{
+  z-index: 1;
+}
+.saving
+{
+  z-index: 1000;
+  background-color:grey;
 }
 
 </style>
